@@ -1,4 +1,5 @@
-module.exports.errorMessage = {
+module.exports.ErrorMessage = {
   FIELD_IS_REQUIRED: "FIELD_IS_REQUIRED",
   PASSWORD_INVALID: "PASSWORD_INVALID",
+  EMAIL_OR_PASSWORD_INCORRECT: "EMAIL_OR_PASSWORD_INCORRECT",
 };

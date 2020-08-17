@@ -2,6 +2,6 @@
  * @param {String} type
  * @param {String} msg
  */
-module.exports.error = (field = "unknow", message) => {
+module.exports.create = (message, field) => {
   return { field, message };
 };

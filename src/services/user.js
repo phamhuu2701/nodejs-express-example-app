@@ -1,4 +1,6 @@
 const UserRepository = require("./../repositories/user");
+const Error = require("../utils/handleError");
+const { ErrorMessage } = require("./../utils/variables");
 
 module.exports.find = async (req) => {
   try {
@@ -27,7 +29,13 @@ module.exports.login = async (req) => {
   try {
     const { email, password } = req.body;
 
-    return await UserRepository.login(email, password);
+    const payload = await UserRepository.login(email, password);
+    if (Object.keys(payload).length === 0) {
+      return Promise.reject(
+        Error.create(ErrorMessage.EMAIL_OR_PASSWORD_INCORRECT)
+      );
+    }
+    return payload;
   } catch (error) {
     return error;
   }
