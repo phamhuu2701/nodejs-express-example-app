@@ -1,4 +1,4 @@
-const UserRepository = require("./../repositories/user");
+const UserRepository = require("./../repository/user");
 const Error = require("../utils/handleError");
 const { ErrorMessage } = require("./../utils/variables");
 
