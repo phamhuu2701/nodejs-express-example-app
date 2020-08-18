@@ -1,4 +1,4 @@
-const Repository = require("./../repository/user");
+const Repository = require("../repository/post");
 
 module.exports.create = async (req) => {
   try {
@@ -48,16 +48,6 @@ module.exports.delete = async (req) => {
     const { id } = req.params;
 
     return await Repository.delete(id);
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.login = async (req) => {
-  try {
-    const { email, password } = req.body;
-
-    return await Repository.login(email, password);
   } catch (error) {
     throw error;
   }

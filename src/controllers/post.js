@@ -1,5 +1,5 @@
-const response = require("./../utils/handleResponse");
-const Service = require("./../services/user");
+const response = require("../utils/handleResponse");
+const Service = require("../services/post");
 
 module.exports.create = async (req, res) => {
   try {
@@ -41,15 +41,6 @@ module.exports.delete = async (req, res) => {
   try {
     await Service.delete(req);
     return response.success(res);
-  } catch (error) {
-    return response.error(res, error);
-  }
-};
-
-module.exports.login = async (req, res) => {
-  try {
-    const payload = await Service.login(req);
-    return response.success(res, payload);
   } catch (error) {
     return response.error(res, error);
   }

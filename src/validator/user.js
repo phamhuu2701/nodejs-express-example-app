@@ -18,6 +18,5 @@ module.exports.login = async (req, res, next) => {
   if (errors.length > 0) {
     return response.error(res, errors);
   }
-
   next();
 };

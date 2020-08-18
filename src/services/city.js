@@ -1,4 +1,4 @@
-const Repository = require("./../repository/user");
+const Repository = require("../repository/city");
 
 module.exports.create = async (req) => {
   try {
@@ -27,37 +27,6 @@ module.exports.findById = async (req) => {
     const { id } = req.params;
 
     return await Repository.findById(id);
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.update = async (req) => {
-  try {
-    const { id } = req.params;
-    const data = req.body;
-
-    return await Repository.update(id, data);
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.delete = async (req) => {
-  try {
-    const { id } = req.params;
-
-    return await Repository.delete(id);
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.login = async (req) => {
-  try {
-    const { email, password } = req.body;
-
-    return await Repository.login(email, password);
   } catch (error) {
     throw error;
   }
