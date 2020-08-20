@@ -24,6 +24,7 @@ const schema = {
   lastLoginAt: { type: Date },
   active: { type: Boolean, default: false },
   city: { type: Schema.ObjectId, ref: "Cities" },
+  avatar: { type: String },
 };
 
 const newSchema = new Schema(schema, {
@@ -31,13 +32,23 @@ const newSchema = new Schema(schema, {
   toJSON: {
     transform: function (doc, res) {
       delete res.password;
+      delete res.ip;
+      delete res.id;
     },
+    virtuals: true,
   },
   toObject: {
     transform: function (doc, res) {
       delete res.password;
+      delete res.ip;
+      delete res.id;
     },
+    virtuals: true,
   },
+});
+
+newSchema.virtual("fullName").get(function () {
+  return this.firstName + " " + this.lastName;
 });
 
 module.exports = connections.model("Users", newSchema);

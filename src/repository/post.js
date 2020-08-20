@@ -12,11 +12,12 @@ module.exports.create = async (model) => {
 module.exports.find = async (page, limit, keyword) => {
   try {
     return await Model.paginate(
-      { content: new RegExp(keyword) },
+      keyword ? { content: new RegExp(keyword) } : {},
       {
         page,
         limit,
         sort: { createdAt: -1 },
+        populate: "user",
       }
     );
   } catch (error) {
@@ -34,7 +35,7 @@ module.exports.findById = async (id) => {
 
 module.exports.update = async (id, data) => {
   try {
-    return await Model.findByIdAndUpdate(id, data);
+    return await Model.findByIdAndupdate(id, data);
   } catch (error) {
     throw error;
   }
@@ -42,7 +43,7 @@ module.exports.update = async (id, data) => {
 
 module.exports.delete = async (id) => {
   try {
-    return await Model.findByIdAndDelete(id);
+    return await Model.findByIdAnddelete(id);
   } catch (error) {
     throw error;
   }

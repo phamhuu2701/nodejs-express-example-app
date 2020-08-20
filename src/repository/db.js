@@ -1,6 +1,6 @@
-const CitiesModel = require("../models/cities");
-const UsersModel = require("../models/users");
-const PostsModel = require("../models/posts");
+const CitiesRepository = require("./city");
+const UsersRepository = require("./user");
+const PostsRepository = require("./post");
 
 const dbCities = require("./../db/cities");
 const dbUsers = require("./../db/users");
@@ -10,74 +10,92 @@ const Videos = require("./../db/static/videos");
 
 module.exports.createCities = async () => {
   try {
-    let payload = await CitiesModel.paginate();
+    let payload = await CitiesRepository.find(1, 10);
 
     if (payload.docs.length === 0) {
       for (const item of dbCities) {
-        const newModel = new CitiesModel(item);
-        await newModel.save();
+        await CitiesRepository.create(item);
       }
-    }
 
-    payload = await CitiesModel.paginate();
+      payload = await CitiesRepository.find(1, 10);
+      console.log("Create Cities collection successfully!");
+    } else {
+      console.log("Cities collection created");
+    }
 
     return payload;
   } catch (error) {
+    console.log("Create Cities collection failed: ", error);
     throw error;
   }
 };
 
 module.exports.createUsers = async () => {
   try {
-    let payload = await UsersModel.paginate();
+    let payload = await UsersRepository.find(1, 10);
 
     if (payload.docs.length === 0) {
-      const city = await CitiesModel.findOne({ name: "Hồ Chí Minh" });
+      const cities = await CitiesRepository.find(1, 10, "Hồ Chí Minh");
+      console.log("cities :>> ", cities);
 
       for (const item of dbUsers) {
-        const newModel = new UsersModel(item);
-        newModel.city = city._id;
-        await newModel.save();
+        let model = item;
+        model.city = cities.docs[0];
+        model.avatar = Images[Math.floor(Math.random() * Images.length)];
+        await UsersRepository.create(model);
       }
-    }
 
-    payload = await UsersModel.paginate();
+      payload = await UsersRepository.find(1, 10);
+      console.log("Create Users collection successfully!");
+    } else {
+      console.log("Users collection created");
+    }
 
     return payload;
   } catch (error) {
+    console.log("Create Users collection failed: ", error);
     throw error;
   }
 };
 
 module.exports.createPosts = async () => {
   try {
-    let payload = await PostsModel.paginate();
+    let payload = await PostsRepository.find(1, 10);
 
     if (payload.docs.length === 0) {
-      const user = await UsersModel.findOne({ email: "odevine2n@google.com" });
+      const user = await UsersRepository.findByEmail("odevine2n@google.com");
 
       for (const item of dbPosts) {
-        const newModel = new PostsModel(item);
-        newModel.user = user._id;
-        if (Math.random() > 0.5) {
-          newModel.type = 1;
-          newModel.attachments.push(
+        let model = item;
+        model.user = user;
+        model.attachments = [];
+
+        const flag = Math.random();
+        if (flag > 0.66) {
+          model.type = 0;
+        } else if (flag < 0.33) {
+          model.type = 1;
+          model.attachments.push(
             Images[Math.floor(Math.random() * Images.length)]
           );
         } else {
-          newModel.type = 2;
-          newModel.attachments.push(
+          model.type = 2;
+          model.attachments.push(
             Videos[Math.floor(Math.random() * Videos.length)]
           );
         }
-        await newModel.save();
+        await PostsRepository.create(model);
       }
-    }
 
-    payload = await PostsModel.paginate();
+      payload = await PostsRepository.find(1, 10);
+      console.log("Create Posts collection successfully!");
+    } else {
+      console.log("Posts collection created");
+    }
 
     return payload;
   } catch (error) {
+    console.log("Create Posts collection failed: ", error);
     throw error;
   }
 };

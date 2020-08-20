@@ -23,7 +23,7 @@ module.exports.find = async (page, limit, keyword) => {
   }
 };
 
-module.exports.findById = async (id) => {
+module.exports.findById = async (_id) => {
   try {
     return await Model.findById(id);
   } catch (error) {

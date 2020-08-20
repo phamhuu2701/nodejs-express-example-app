@@ -8,7 +8,7 @@ const schema = {
   type: { type: Number, default: 0 }, // [0: text, 1: images, 2: videos]
   attachments: { type: Array, default: [] },
   likes: { type: Array, default: [] },
-  comment: { type: Array, default: [] },
+  comments: { type: Array, default: [] },
   shares: { type: Array, default: [] },
   user: { type: Schema.ObjectId, ref: "Users" },
 };

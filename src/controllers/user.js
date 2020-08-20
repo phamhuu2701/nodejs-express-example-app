@@ -51,6 +51,17 @@ module.exports.login = async (req, res) => {
     const payload = await Service.login(req);
     return response.success(res, payload);
   } catch (error) {
+    console.log(error);
+    return response.error(res, error);
+  }
+};
+
+module.exports.getProfile = async (req, res) => {
+  try {
+    const payload = await Service.getProfile(req);
+    return response.success(res, payload);
+  } catch (error) {
+    console.log('error :>> ', error);
     return response.error(res, error);
   }
 };

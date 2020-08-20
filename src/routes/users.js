@@ -11,5 +11,6 @@ router.put("/:id", Controller.update);
 router.delete("/:id", Controller.delete);
 
 router.post("/login", Validate.login, Controller.login);
+router.post("/me", Controller.getProfile);
 
 module.exports = router;
