@@ -1,6 +1,4 @@
 const Repository = require("./../repository/user");
-const { ErrorCode } = require("./../utils/variables");
-const ErrorHandler = require("./../utils/errorHandler");
 
 module.exports.create = async (req) => {
   try {
@@ -67,12 +65,8 @@ module.exports.login = async (req) => {
 
 module.exports.getProfile = async (req) => {
   try {
-    const token = req.headers && req.headers.authorization;
-    if (token) {
-      return await Repository.getProfile(token);
-    } else {
-      return Promise.reject(ErrorHandler.create(ErrorCode.NO_TOKEN_PROVIDER));
-    }
+    const { authorization } = req.headers;
+    return await Repository.getProfile(authorization);
   } catch (error) {
     throw error;
   }

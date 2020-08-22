@@ -12,7 +12,7 @@ module.exports.create = async (model) => {
 module.exports.find = async (page, limit, keyword) => {
   try {
     return await Model.paginate(
-      keyword ? { content: new RegExp(keyword) } : {},
+      keyword ? { content: new RegExp(keyword.toLowerCase(), "i") } : {},
       {
         page,
         limit,
@@ -35,7 +35,15 @@ module.exports.findById = async (id) => {
 
 module.exports.update = async (id, data) => {
   try {
-    return await Model.findByIdAndupdate(id, data);
+    return await Model.findByIdAndUpdate(id, data);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.updateUnauthorization = async (id, data) => {
+  try {
+    return await Model.findByIdAndUpdate(id, data);
   } catch (error) {
     throw error;
   }

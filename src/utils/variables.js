@@ -1,21 +1,15 @@
-const ErrorCode = {
+module.exports.ErrorCode = {
   FIELD_IS_REQUIRED: "FIELD_IS_REQUIRED",
   FIELD_INVALID: "FIELD_INVALID",
   EMAIL_OR_PASSWORD_INCORRECT: "EMAIL_OR_PASSWORD_INCORRECT",
-  EMAIL_OR_PASSWORD_INCORRECT: "EMAIL_OR_PASSWORD_INCORRECT",
-  NO_TOKEN_PROVIDER: "NO_TOKEN_PROVIDER",
   INVALID_TOKEN: "INVALID_TOKEN",
+  UNAUTHORIZATION: "UNAUTHORIZATION",
 };
 
-const ErrorMessage = {
-  [ErrorCode.FIELD_IS_REQUIRED]: "Field is required",
-  [ErrorCode.FIELD_INVALID]: "Field invalid",
-  [ErrorCode.EMAIL_OR_PASSWORD_INCORRECT]: "Email or Password incorrect",
-  [ErrorCode.NO_TOKEN_PROVIDER]: "NO_TOKEN_PROVIDER",
-  [ErrorCode.INVALID_TOKEN]: "INVALID_TOKEN",
-};
-
-module.exports = {
-  ErrorCode,
-  ErrorMessage,
+module.exports.ErrorMessage = {
+  [this.ErrorCode.FIELD_IS_REQUIRED]: "Field is required",
+  [this.ErrorCode.FIELD_INVALID]: "Field invalid",
+  [this.ErrorCode.EMAIL_OR_PASSWORD_INCORRECT]: "Email or Password incorrect",
+  [this.ErrorCode.INVALID_TOKEN]: "INVALID_TOKEN",
+  [this.ErrorCode.UNAUTHORIZATION]: "UNAUTHORIZATION",
 };

@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const connections = require("../config/mongodb");
+const { ROLE } = require("../config/constants");
 
 const schema = {
   firstName: { type: String, required: true },
@@ -13,12 +14,11 @@ const schema = {
     trim: true,
     lowercase: true,
   },
-  phoneNumber: { type: String },
+  phoneNumber: { type: String, unique: true },
   password: { type: String, required: true },
   gender: { type: Boolean, default: false },
-  role: { type: String, default: "USER" },
+  role: { type: String, default: ROLE.USER },
   birthday: { type: Date },
-  address: { type: String, default: "" },
   ip: { type: String },
   loginCount: { type: Number, default: 0 },
   lastLoginAt: { type: Date },
@@ -32,16 +32,12 @@ const newSchema = new Schema(schema, {
   toJSON: {
     transform: function (doc, res) {
       delete res.password;
-      delete res.ip;
-      delete res.id;
     },
     virtuals: true,
   },
   toObject: {
     transform: function (doc, res) {
       delete res.password;
-      delete res.ip;
-      delete res.id;
     },
     virtuals: true,
   },

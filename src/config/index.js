@@ -1,5 +1,5 @@
-const env = process.env.ENV;
-console.log("env :>> ", env);
+const ENV = process.env.ENV;
+console.log("ENV :>> ", ENV);
 
 let CONFIG = {};
 CONFIG.ENV = process.env.ENV || "development";

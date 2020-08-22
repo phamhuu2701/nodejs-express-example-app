@@ -12,11 +12,9 @@ module.exports.create = async (req) => {
 
 module.exports.find = async (req) => {
   try {
-    const { page, limit, keyword } = req.query;
-    const _page = parseInt(page) || 1;
-    const _limit = parseInt(limit) || 10;
+    const { keyword } = req.query;
 
-    return await Repository.find(_page, _limit, keyword);
+    return await Repository.find(keyword);
   } catch (error) {
     throw error;
   }

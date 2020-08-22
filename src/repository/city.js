@@ -5,29 +5,29 @@ module.exports.create = async (model) => {
     const newModel = new Model(model);
     return await newModel.save();
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
 
-module.exports.find = async (page, limit, keyword) => {
+module.exports.find = async (keyword) => {
   try {
-    return await Model.paginate(keyword ? { name: new RegExp(keyword) } : {}, {
-      page,
-      limit,
-      sort: { createdAt: -1 },
-    });
+    return await Model.paginate(
+      keyword ? { name: new RegExp(keyword.toLowerCase(), "i") } : {},
+      {
+        page: 1,
+        limit: 100,
+        sort: { createdAt: -1 },
+      }
+    );
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
 
-module.exports.findById = async (_id) => {
+module.exports.findById = async (id) => {
   try {
     return await Model.findById(id);
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };

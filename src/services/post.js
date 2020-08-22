@@ -43,6 +43,17 @@ module.exports.update = async (req) => {
   }
 };
 
+module.exports.updateUnauthorization = async (req) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    return await Repository.update(id, data);
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports.delete = async (req) => {
   try {
     const { id } = req.params;

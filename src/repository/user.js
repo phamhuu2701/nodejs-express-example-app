@@ -9,6 +9,7 @@ module.exports.create = async (model) => {
   try {
     const salt = bcrypt.genSaltSync(10);
     const passwordEncode = bcrypt.hashSync(model.password, salt);
+
     model.password = passwordEncode;
 
     const newModel = new Model(model);
@@ -24,10 +25,10 @@ module.exports.find = async (page, limit, keyword) => {
       keyword
         ? {
             $or: [
-              { firstName: new RegExp(keyword) },
-              { lastName: new RegExp(keyword) },
-              { email: new RegExp(keyword) },
-              { phoneNumber: new RegExp(keyword) },
+              { firstName: new RegExp(keyword.toLowerCase(), "i") },
+              { lastName: new RegExp(keyword.toLowerCase(), "i") },
+              { email: new RegExp(keyword.toLowerCase(), "i") },
+              { phoneNumber: new RegExp(keyword.toLowerCase(), "i") },
             ],
           }
         : {},
@@ -61,7 +62,7 @@ module.exports.findByEmail = async (email) => {
 
 module.exports.update = async (id, data) => {
   try {
-    return await Model.findByIdAndUpdate(id, data);
+    return await Model.findByIdAndUpdate(id, data).populate("city");
   } catch (error) {
     throw error;
   }

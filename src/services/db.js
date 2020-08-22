@@ -5,9 +5,16 @@ module.exports.create = async (req) => {
     const citiesPayload = await Repository.createCities();
     const usersPayload = await Repository.createUsers();
     const postsPayload = await Repository.createPosts();
+    const postsPayloadUpdated = await Repository.updatePosts();
 
-    return { citiesPayload, usersPayload, postsPayload };
+    return {
+      // citiesPayload,
+      // usersPayload,
+      // postsPayload,
+      postsPayloadUpdated,
+    };
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
