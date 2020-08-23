@@ -10,6 +10,8 @@ const dbRouter = require("./src/routes/db");
 const citiesRouter = require("./src/routes/cities");
 const usersRouter = require("./src/routes/users");
 const postsRouter = require("./src/routes/posts");
+const messagesRouter = require("./src/routes/messages");
+const conversationsRouter = require("./src/routes/conversations");
 
 const app = express();
 
@@ -34,6 +36,8 @@ app.use("/api/db", dbRouter);
 app.use("/api/cities", citiesRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/posts", postsRouter);
+app.use("/api/messages", messagesRouter);
+app.use("/api/conversations", conversationsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

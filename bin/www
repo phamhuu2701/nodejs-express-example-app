@@ -7,12 +7,13 @@
 var app = require("../app");
 var debug = require("debug")("haloha-backend:server");
 var http = require("http");
+const CONFIG = require("../src/config");
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || "3002");
+var port = normalizePort(process.env.PORT || CONFIG.PORT);
 app.set("port", port);
 
 /**
@@ -20,6 +21,17 @@ app.set("port", port);
  */
 
 var server = http.createServer(app);
+
+const io = require("socket.io")(server);
+
+io.on("connect", (socket) => {
+  console.log("Client connected :>> ", socket.id);
+
+  socket.on("send_messages", (data) => {
+    console.log("socket :>> on send_messages -> emit receive_messages");
+    io.sockets.emit("receive_messages", new Date());
+  });
+});
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -83,5 +95,5 @@ function onListening() {
   var addr = server.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
-  console.log("App running on port = " + port);
+  console.log(`App running on port ${port}`);
 }

@@ -1,10 +1,7 @@
-const ENV = process.env.ENV;
-console.log("ENV :>> ", ENV);
-
 let CONFIG = {};
 CONFIG.ENV = process.env.ENV || "development";
 CONFIG.HOST = process.env.HOST || "localhost";
-CONFIG.POST = process.env.PORT || "3002";
+CONFIG.PORT = process.env.PORT || "3002";
 
 // mongodb
 CONFIG.MONGO_HOST = process.env.MONGO_HOST || "localhost";
