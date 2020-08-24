@@ -1,15 +1,5 @@
 const Repository = require("./../repository/user");
 
-module.exports.create = async (req) => {
-  try {
-    const data = req.body;
-
-    return await Repository.create(data);
-  } catch (error) {
-    throw error;
-  }
-};
-
 module.exports.find = async (req) => {
   try {
     const { page, limit, keyword } = req.query;
@@ -17,6 +7,16 @@ module.exports.find = async (req) => {
     const _limit = parseInt(limit) || 10;
 
     return await Repository.find(_page, _limit, keyword);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.create = async (req) => {
+  try {
+    const data = req.body;
+
+    return await Repository.create(data);
   } catch (error) {
     throw error;
   }
@@ -63,10 +63,10 @@ module.exports.login = async (req) => {
   }
 };
 
-module.exports.getProfile = async (req) => {
+module.exports.getUserByToken = async (req) => {
   try {
     const { authorization } = req.headers;
-    return await Repository.getProfile(authorization);
+    return await Repository.getUserByToken(authorization);
   } catch (error) {
     throw error;
   }

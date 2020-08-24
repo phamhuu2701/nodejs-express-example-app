@@ -14,14 +14,14 @@ const Videos = require("./../db/static/videos");
 
 module.exports.createCities = async () => {
   try {
-    let payload = await CitiesRepository.find();
+    let payload = await CitiesRepository.find(1, 10);
 
     if (payload.docs.length === 0) {
       for (const item of dbCities) {
         await CitiesRepository.create(item);
       }
 
-      payload = await CitiesRepository.find();
+      payload = await CitiesRepository.find(1, 10);
       console.log("Create Cities collection successfully!");
     } else {
       console.log("Cities collection created");
@@ -74,17 +74,17 @@ module.exports.createPosts = async () => {
         model.attachments = [];
 
         const flag = Math.random();
-        if (flag > 0.66) {
-          model.type = 0;
-        } else if (flag < 0.33) {
-          model.type = 1;
-          model.attachments.push(
-            Images[Math.floor(Math.random() * Images.length)]
-          );
-        } else {
-          model.type = 2;
+        if (flag < 0.25) {
+          model.type = 0; // only text
+        } else if (flag > 0.75) {
+          model.type = 2; // videos
           model.attachments.push(
             Videos[Math.floor(Math.random() * Videos.length)]
+          );
+        } else {
+          model.type = 1; // images
+          model.attachments.push(
+            Images[Math.floor(Math.random() * Images.length)]
           );
         }
         await PostsRepository.create(model);
@@ -110,6 +110,8 @@ module.exports.updatePosts = async () => {
 
     for (const item of postsPayload.docs) {
       let newItem = item;
+
+      // update likes
       const likesCount = Math.floor(Math.random() * postsPayload.docs.length);
       if (newItem.likes.length === 0 && likesCount > 0) {
         for (let i = 0; i < likesCount; i++) {
@@ -117,6 +119,7 @@ module.exports.updatePosts = async () => {
         }
       }
 
+      // update shares
       const sharesCount = Math.floor(Math.random() * postsPayload.docs.length);
       if (newItem.shares.length === 0 && sharesCount > 0) {
         for (let i = 0; i < sharesCount; i++) {
@@ -124,21 +127,22 @@ module.exports.updatePosts = async () => {
         }
       }
 
-      const commentsCount = Math.floor(Math.random() * dbComments.length);
-      if (newItem.comments.length === 0 && commentsCount > 0) {
-        for (let i = 0; i < commentsCount; i++) {
-          const comment = {
-            content:
-              dbComments[Math.floor(Math.random() * dbComments.length)].content,
-            timestamps: new Date(),
-            user:
-              usersPayload.docs[
-                Math.floor(Math.random() * usersPayload.docs.length)
-              ]._id,
-          };
-          newItem.comments.push(comment);
-        }
-      }
+      // // update comments
+      // const commentsCount = Math.floor(Math.random() * dbComments.length);
+      // if (newItem.comments.length === 0 && commentsCount > 0) {
+      //   for (let i = 0; i < commentsCount; i++) {
+      //     const comment = {
+      //       content:
+      //         dbComments[Math.floor(Math.random() * dbComments.length)].content,
+      //       timestamps: new Date(),
+      //       user:
+      //         usersPayload.docs[
+      //           Math.floor(Math.random() * usersPayload.docs.length)
+      //         ]._id,
+      //     };
+      //     newItem.comments.push(comment);
+      //   }
+      // }
 
       await PostsRepository.update(newItem._id, newItem);
     }
@@ -148,58 +152,6 @@ module.exports.updatePosts = async () => {
     return postsPayload;
   } catch (error) {
     console.log("Update Posts collection failed: ", error);
-    throw error;
-  }
-};
-
-module.exports.createMessages = async () => {
-  const usersPayload = await UsersRepository.find(1, dbUsers.length);
-
-  try {
-    let payload = await MessagesRepository.find(1, 10);
-
-    if (payload.docs.length === 0) {
-      for (const item of dbMessages) {
-        const users = [
-          usersPayload.docs[
-            Math.floor(Math.random() * usersPayload.docs.length)
-          ]._id,
-          usersPayload.docs[
-            Math.floor(Math.random() * usersPayload.docs.length)
-          ]._id,
-        ];
-
-        const messagesCount = Math.floor(Math.random() * dbMessages.length);
-        let messages = [];
-        if (messagesCount >= 0) {
-          for (let i = 0; i < messagesCount; i++) {
-            const message = {
-              user: users[Math.floor(Math.random() * users.length)],
-              content:
-                dbMessages[Math.floor(Math.random() * usersPayload.docs.length)]
-                  .content,
-              timestamps: new Date(),
-            };
-            messages.push(message);
-          }
-        }
-
-        let newItem = {
-          users,
-          messages,
-        };
-
-        await MessagesRepository.create(newItem);
-      }
-      console.log("Create Messages collection successfully!");
-    } else {
-      console.log("Messages collection created");
-    }
-
-    payload = await MessagesRepository.find(1, 10);
-    return payload;
-  } catch (error) {
-    console.log("Create Messages collection failed: ", error);
     throw error;
   }
 };
@@ -214,11 +166,9 @@ module.exports.createConversations = async () => {
       for (let i = 0; i < 99; i++) {
         const model = {
           users: [
+            usersPayload.docs[0]._id,
             usersPayload.docs[
-              Math.floor(Math.random() * usersPayload.docs.length)
-            ]._id,
-            usersPayload.docs[
-              Math.floor(Math.random() * usersPayload.docs.length)
+              Math.floor(Math.random() * usersPayload.docs.length - 1) + 1
             ]._id,
           ],
         };
@@ -241,11 +191,11 @@ module.exports.createConversations = async () => {
 module.exports.createMessages = async () => {
   try {
     let conversationsPayload = await ConversationsRepository.find(1, 99);
-    let payload = await MessagesRepository.find(1, 99);
+    let payload = await MessagesRepository.find(1, 10);
 
     if (payload.docs.length === 0) {
       for (const item of conversationsPayload.docs) {
-        const count = Math.floor((Math.random() * dbMessages.length) / 2);
+        const count = Math.floor(Math.random() * 50);
         for (let i = 0; i < count; i++) {
           const model = {
             conversation: item._id,

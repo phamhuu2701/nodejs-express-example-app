@@ -8,6 +8,7 @@ var app = require("../app");
 var debug = require("debug")("haloha-backend:server");
 var http = require("http");
 const CONFIG = require("../src/config");
+const { onSocketConnect } = require("../src/socket");
 
 /**
  * Get port from environment and store in Express.
@@ -24,14 +25,7 @@ var server = http.createServer(app);
 
 const io = require("socket.io")(server);
 
-io.on("connect", (socket) => {
-  console.log("Client connected :>> ", socket.id);
-
-  socket.on("send_messages", (data) => {
-    console.log("socket :>> on send_messages -> emit receive_messages");
-    io.sockets.emit("receive_messages", new Date());
-  });
-});
+io.on("connect", (socket) => onSocketConnect(socket, io));
 
 /**
  * Listen on provided port, on all network interfaces.

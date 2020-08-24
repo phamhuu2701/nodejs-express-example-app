@@ -7,16 +7,13 @@ module.exports.create = async (req) => {
     const postsPayload = await Repository.createPosts();
     const postsPayloadUpdated = await Repository.updatePosts();
     const conversationsPayload = await Repository.createConversations();
-    let messagesPayload = {};
-    if (Object.keys(conversationsPayload).length > 0) {
-      messagesPayload = await Repository.createMessages();
-    }
+    const messagesPayload = await Repository.createMessages();
 
     return {
-      // citiesPayload,
-      // usersPayload,
-      // postsPayload,
-      // postsPayloadUpdated,
+      citiesPayload,
+      usersPayload,
+      postsPayload,
+      postsPayloadUpdated,
       conversationsPayload,
       messagesPayload,
     };

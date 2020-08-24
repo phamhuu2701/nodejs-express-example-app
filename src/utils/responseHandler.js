@@ -34,10 +34,10 @@ const success = (res, payload, status = 200) => {
  * @param {Object} errors
  * @param {Number} status
  */
-const error = (res, errors, status = 500) => {
+const error = (res, error, status = 500) => {
   const response = {
     success: false,
-    errors,
+    error,
   };
   return res.status(500).json(response);
 };

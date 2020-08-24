@@ -1,5 +1,25 @@
 const Model = require("../models/posts");
 
+module.exports.find = async (page, limit, keyword, user) => {
+  try {
+    let query = {};
+    if (keyword) {
+      query = { ...query, content: new RegExp(keyword.toLowerCase(), "i") };
+    }
+    if (user) {
+      query = { ...query, user };
+    }
+    return await Model.paginate(query, {
+      page,
+      limit,
+      sort: { createdAt: -1 },
+      populate: "user",
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports.create = async (model) => {
   try {
     const newModel = new Model(model);
@@ -8,23 +28,6 @@ module.exports.create = async (model) => {
     throw error;
   }
 };
-
-module.exports.find = async (page, limit, keyword) => {
-  try {
-    return await Model.paginate(
-      keyword ? { content: new RegExp(keyword.toLowerCase(), "i") } : {},
-      {
-        page,
-        limit,
-        sort: { createdAt: -1 },
-        populate: "user",
-      }
-    );
-  } catch (error) {
-    throw error;
-  }
-};
-
 module.exports.findById = async (id) => {
   try {
     return await Model.findById(id).populate("user");

@@ -1,23 +1,9 @@
 const Model = require("../models/users");
 const { ErrorCode } = require("./../utils/variables");
-const ErrorHandler = require("./../utils/errorHandler");
+const { ErrorHandler } = require("./../utils/errorHandler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const CONFIG = require("./../config");
-
-module.exports.create = async (model) => {
-  try {
-    const salt = bcrypt.genSaltSync(10);
-    const passwordEncode = bcrypt.hashSync(model.password, salt);
-
-    model.password = passwordEncode;
-
-    const newModel = new Model(model);
-    return await newModel.save();
-  } catch (error) {
-    throw error;
-  }
-};
 
 module.exports.find = async (page, limit, keyword) => {
   try {
@@ -39,6 +25,20 @@ module.exports.find = async (page, limit, keyword) => {
         populate: "city",
       }
     );
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.create = async (model) => {
+  try {
+    const salt = bcrypt.genSaltSync(10);
+    const passwordEncode = bcrypt.hashSync(model.password, salt);
+
+    model.password = passwordEncode;
+
+    const newModel = new Model(model);
+    return await newModel.save();
   } catch (error) {
     throw error;
   }
@@ -122,7 +122,7 @@ module.exports.decodeToken = async (token) => {
   }
 };
 
-module.exports.getProfile = async (token) => {
+module.exports.getUserByToken = async (token) => {
   try {
     const res = await this.decodeToken(token);
     if (res && res.email) {

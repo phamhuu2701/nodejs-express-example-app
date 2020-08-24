@@ -1,29 +1,22 @@
 const Model = require("../models/conversations");
 
-module.exports.create = async (model) => {
-  try {
-    const newModel = new Model(model);
-    return await newModel.save();
-  } catch (error) {
-    throw error;
-  }
-};
-
 module.exports.find = async (page, limit, user) => {
   try {
-    let query = {};
-    if (user) {
-      query = {
-        ...query,
-        users: user,
-      };
-    }
-    return await Model.paginate(query, {
+    return await Model.paginate(user ? { users: user } : {}, {
       page,
       limit,
       sort: { createdAt: -1 },
       populate: "users",
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.create = async (model) => {
+  try {
+    const newModel = new Model(model);
+    return await newModel.save();
   } catch (error) {
     throw error;
   }

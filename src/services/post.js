@@ -1,22 +1,22 @@
 const Repository = require("../repository/post");
 
-module.exports.create = async (req) => {
+module.exports.find = async (req) => {
   try {
-    const data = req.body;
+    const { page, limit, keyword, user } = req.query;
+    const _page = parseInt(page) || 1;
+    const _limit = parseInt(limit) || 10;
 
-    return await Repository.create(data);
+    return await Repository.find(_page, _limit, keyword, user);
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.find = async (req) => {
+module.exports.create = async (req) => {
   try {
-    const { page, limit, keyword } = req.query;
-    const _page = parseInt(page) || 1;
-    const _limit = parseInt(limit) || 10;
+    const data = req.body;
 
-    return await Repository.find(_page, _limit, keyword);
+    return await Repository.create(data);
   } catch (error) {
     throw error;
   }

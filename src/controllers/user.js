@@ -1,21 +1,21 @@
 const Service = require("./../services/user");
 const { ResponseHandler } = require("./../utils/responseHandler");
 
-module.exports.create = async (req, res) => {
-  try {
-    const payload = await Service.create(req);
-    return ResponseHandler.success(res, payload, 201);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
 module.exports.find = async (req, res) => {
   try {
     const payload = await Service.find(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
     return ResponseHandler.error(res, error, 404);
+  }
+};
+
+module.exports.create = async (req, res) => {
+  try {
+    const payload = await Service.create(req);
+    return ResponseHandler.success(res, payload, 201);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
   }
 };
 
@@ -56,9 +56,9 @@ module.exports.login = async (req, res) => {
   }
 };
 
-module.exports.getProfile = async (req, res) => {
+module.exports.getUserByToken = async (req, res) => {
   try {
-    const payload = await Service.getProfile(req);
+    const payload = await Service.getUserByToken(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
     console.log("error :>> ", error);

@@ -1,14 +1,5 @@
 const Model = require("../models/messages");
 
-module.exports.create = async (model) => {
-  try {
-    const newModel = new Model(model);
-    return await newModel.save();
-  } catch (error) {
-    throw error;
-  }
-};
-
 module.exports.find = async (page, limit, keyword, conversation) => {
   try {
     let query = {};
@@ -22,8 +13,17 @@ module.exports.find = async (page, limit, keyword, conversation) => {
       page,
       limit,
       sort: { createdAt: -1 },
-      populate: "user",
+      populate: ["conversation", "user"],
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.create = async (model) => {
+  try {
+    const newModel = new Model(model);
+    return await newModel.save();
   } catch (error) {
     throw error;
   }

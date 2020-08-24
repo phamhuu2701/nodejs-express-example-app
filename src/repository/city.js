@@ -1,24 +1,24 @@
 const Model = require("../models/cities");
 
-module.exports.create = async (model) => {
+module.exports.find = async (page, limit, keyword) => {
   try {
-    const newModel = new Model(model);
-    return await newModel.save();
+    return await Model.paginate(
+      keyword ? { name: new RegExp(keyword.toLowerCase(), "i") } : {},
+      {
+        page,
+        limit,
+        sort: { createdAt: -1 },
+      }
+    );
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.find = async (keyword) => {
+module.exports.create = async (model) => {
   try {
-    return await Model.paginate(
-      keyword ? { name: new RegExp(keyword.toLowerCase(), "i") } : {},
-      {
-        page: 1,
-        limit: 100,
-        sort: { createdAt: -1 },
-      }
-    );
+    const newModel = new Model(model);
+    return await newModel.save();
   } catch (error) {
     throw error;
   }
