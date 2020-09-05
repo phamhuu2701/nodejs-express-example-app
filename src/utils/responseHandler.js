@@ -39,10 +39,12 @@ const error = (res, error, status = 500) => {
     success: false,
     error,
   };
-  return res.status(500).json(response);
+  return res.status(status).json(response);
 };
 
-module.exports.ResponseHandler = {
+const ResponseHandler = {
   success,
   error,
 };
+
+module.exports = ResponseHandler;

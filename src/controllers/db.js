@@ -1,5 +1,5 @@
-const { ResponseHandler } = require("../utils/responseHandler");
 const Service = require("../services/db");
+const ResponseHandler = require("../utils/responseHandler");
 
 module.exports.create = async (req, res) => {
   console.log("Creating defaut database..");

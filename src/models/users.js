@@ -1,8 +1,7 @@
 "use strict";
 const mongoose = require("mongoose");
+const connection = require("../config/connection");
 const Schema = mongoose.Schema;
-const connections = require("../config/mongodb");
-const { ROLE } = require("../config/constants");
 
 const schema = {
   firstName: { type: String, required: true },
@@ -14,10 +13,10 @@ const schema = {
     trim: true,
     lowercase: true,
   },
-  phoneNumber: { type: String, unique: true },
+  phoneNumber: { type: String },
   password: { type: String, required: true },
   gender: { type: Boolean, default: false },
-  role: { type: String, default: ROLE.USER },
+  role: { type: String, default: "USER" },
   birthday: { type: Date },
   ip: { type: String },
   loginCount: { type: Number, default: 0 },
@@ -47,4 +46,4 @@ newSchema.virtual("fullName").get(function () {
   return this.firstName + " " + this.lastName;
 });
 
-module.exports = connections.model("Users", newSchema);
+module.exports = connection.model("Users", newSchema);

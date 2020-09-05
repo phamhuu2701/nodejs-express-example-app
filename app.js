@@ -16,9 +16,9 @@ const conversationsRouter = require("./src/routes/conversations");
 const app = express();
 
 // connect mongodb
-const config = require("./src/config");
+const CONFIG = require("./src/config");
 const mongodb = require("./src/connector/mongo");
-mongodb.connect(config.MONGO_URL);
+mongodb.connect(CONFIG.MONGO_URL);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

@@ -1,5 +1,5 @@
-const { ResponseHandler } = require("../utils/responseHandler");
 const Service = require("../services/conversation");
+const ResponseHandler = require("../utils/responseHandler");
 
 module.exports.find = async (req, res) => {
   try {

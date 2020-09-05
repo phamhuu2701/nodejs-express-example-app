@@ -1,7 +1,7 @@
 "use strict";
 const mongoose = require("mongoose");
+const connection = require("../config/connection");
 const Schema = mongoose.Schema;
-const connections = require("../config/mongodb");
 
 const schema = {
   conversation: { type: Schema.ObjectId, ref: "Conversations" },
@@ -13,4 +13,4 @@ const newSchema = new Schema(schema, {
   timestamps: true,
 });
 
-module.exports = connections.model("Messages", newSchema);
+module.exports = connection.model("Messages", newSchema);

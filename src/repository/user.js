@@ -1,9 +1,9 @@
 const Model = require("../models/users");
-const { ErrorCode } = require("./../utils/variables");
-const { ErrorHandler } = require("./../utils/errorHandler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const CONFIG = require("./../config");
+const CONFIG = require("../config");
+const { ErrorCode } = require("../utils/variables");
+const { ErrorHandler } = require("../utils/errorHandler");
 
 module.exports.find = async (page, limit, keyword) => {
   try {
@@ -52,14 +52,6 @@ module.exports.findById = async (id) => {
   }
 };
 
-module.exports.findByEmail = async (email) => {
-  try {
-    return await Model.findOne({ email }).populate("city");
-  } catch (error) {
-    throw error;
-  }
-};
-
 module.exports.update = async (id, data) => {
   try {
     return await Model.findByIdAndUpdate(id, data).populate("city");
@@ -71,6 +63,14 @@ module.exports.update = async (id, data) => {
 module.exports.delete = async (id) => {
   try {
     return await Model.findByIdAnddelete(id);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.findByEmail = async (email) => {
+  try {
+    return await Model.findOne({ email }).populate("city");
   } catch (error) {
     throw error;
   }

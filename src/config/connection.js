@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const config = require("./index");
+const CONFIG = require(".");
+
 mongoose.plugin(require("mongoose-paginate-v2"));
 mongoose.set("useNewUrlParser", true);
 mongoose.set("useCreateIndex", true);
@@ -7,7 +8,7 @@ mongoose.set("useFindAndModify", true);
 mongoose.set("useUnifiedTopology", true);
 mongoose.Promise = Promise;
 
-const connection = mongoose.createConnection(config.MONGO_URL, {
+const connection = mongoose.createConnection(CONFIG.MONGO_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
@@ -15,7 +16,7 @@ const connection = mongoose.createConnection(config.MONGO_URL, {
 });
 
 connection.on("connected", () => {
-  console.log("MongoDB connected to " + config.MONGO_URL);
+  console.log("MongoDB connected to " + CONFIG.MONGO_URL);
 });
 
 connection.on("error", function (err) {

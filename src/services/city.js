@@ -4,7 +4,7 @@ module.exports.find = async (req) => {
   try {
     const { page, limit, keyword } = req.query;
     const _page = parseInt(page) || 1;
-    const _limit = parseInt(limit) || 10;
+    const _limit = parseInt(limit) || 100;
 
     return await Repository.find(_page, _limit, keyword);
   } catch (error) {
