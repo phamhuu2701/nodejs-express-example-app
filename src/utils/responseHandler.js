@@ -35,10 +35,20 @@ const success = (res, payload, status = 200) => {
  * @param {Number} status
  */
 const error = (res, error, status = 500) => {
-  const response = {
+  let response = {
     success: false,
     error,
   };
+
+  if (error.message) {
+    response = {
+      ...response,
+      error: {
+        errorMessage: error.message,
+      },
+    };
+  }
+
   return res.status(status).json(response);
 };
 

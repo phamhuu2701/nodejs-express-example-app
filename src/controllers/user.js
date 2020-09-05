@@ -1,5 +1,6 @@
 const Service = require("./../services/user");
 const ResponseHandler = require("../utils/responseHandler");
+const { ErrorHandler } = require("../utils/errorHandler");
 
 module.exports.find = async (req, res) => {
   try {
@@ -63,5 +64,15 @@ module.exports.getUserByToken = async (req, res) => {
   } catch (error) {
     console.log("error :>> ", error);
     return ResponseHandler.error(res, error, 404);
+  }
+};
+
+module.exports.loginFacebook = async (req, res) => {
+  try {
+    const payload = await Service.loginFacebook(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    console.log(error);
+    return ResponseHandler.error(res, error);
   }
 };

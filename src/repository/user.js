@@ -94,8 +94,8 @@ module.exports.login = async (email, password) => {
         ErrorHandler.create(ErrorCode.EMAIL_OR_PASSWORD_INCORRECT)
       );
     }
-    const passwordCorrect = await bcrypt.compareSync(password, user.password);
-    if (!passwordCorrect) {
+    const passwordDecode = await bcrypt.compareSync(password, user.password);
+    if (!passwordDecode) {
       return Promise.reject(
         ErrorHandler.create(ErrorCode.EMAIL_OR_PASSWORD_INCORRECT)
       );
@@ -135,6 +135,29 @@ module.exports.getUserByToken = async (token) => {
     } else {
       return Promise.reject(ErrorHandler.create(ErrorCode.INVALID_TOKEN));
     }
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.loginFacebook = async (data) => {
+  try {
+    let user = await this.findByEmail(data.email);
+    if (!user) {
+      const res = await this.create(data);
+      if (res) {
+        user = res;
+      }
+    }
+
+    user.set("loginCount", user.loginCount + 1);
+    user.set("lastLoginAt", new Date());
+
+    const _data = { loginCount: user.loginCount + 1, lastLoginAt: new Date() };
+    await this.update(user._id, _data);
+
+    const token = await this.generateToken(user._id, user.email);
+    return { user, token };
   } catch (error) {
     throw error;
   }

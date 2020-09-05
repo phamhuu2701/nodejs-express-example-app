@@ -11,6 +11,7 @@ router.put("/:id", Controller.update);
 router.delete("/:id", Controller.delete);
 
 router.post("/login", Validate.login, Controller.login);
+router.post("/login-facebook", Validate.loginFacebook, Controller.loginFacebook);
 router.post("/me", Validate.authorization, Controller.getUserByToken);
 
 module.exports = router;

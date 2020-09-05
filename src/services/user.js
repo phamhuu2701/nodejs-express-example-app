@@ -71,3 +71,19 @@ module.exports.getUserByToken = async (req) => {
     throw error;
   }
 };
+
+module.exports.loginFacebook = async (req) => {
+  try {
+    const data = {
+      firstName: req.body.first_name,
+      lastName: req.body.last_name,
+      email: req.body.email,
+      password:
+        Math.random().toString(36).substring(7) +
+        Math.random().toString(36).substring(7),
+    };
+    return await Repository.loginFacebook(data);
+  } catch (error) {
+    throw error;
+  }
+};
