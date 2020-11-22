@@ -1,53 +1,60 @@
-const { ErrorCode } = require("../utils/variables");
-const { ErrorHandler } = require("../utils/errorHandler");
-const ResponseHandler = require("../utils/responseHandler");
+const ResponseHandler = require('../utils/responseHandler');
+const { ErrorMessage } = require('../variables/errorMessage');
 
-const UserRepository = require("./../repository/user");
+const UserRepository = require('./../repository/user');
+const { formValidate } = require('./formValidate');
 
 module.exports.create = async (req, res, next) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { first_name, last_name, email, password } = req.body;
 
-  if (!firstName) {
+  const firstNameValid = formValidate(first_name, { required: true });
+  if (!firstNameValid.success) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "firstName"),
-      400
+      { ...firstNameValid.error, field: 'first_name' },
+      400,
     );
   }
-  if (!lastName) {
+
+  const lastNameValid = formValidate(last_name, { required: true });
+  if (!lastNameValid.success) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "lastName"),
-      400
+      { ...lastNameValid.error, field: 'last_name' },
+      400,
     );
   }
-  if (!email) {
+
+  const emailValid = formValidate(email, { required: true }, 'email');
+  if (!emailValid.success) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "email"),
-      400
+      { ...emailValid.error, field: 'email' },
+      400,
     );
   } else {
     const user = await UserRepository.findByEmail(email);
     if (user) {
       return ResponseHandler.error(
         res,
-        ErrorHandler.create(ErrorCode.EMAIL_EXISTS, "email"),
-        400
+        {
+          message: ErrorMessage.FIELD_VALUE_ALREADY_EXISTED,
+          field: 'email',
+        },
+        400,
       );
     }
   }
-  if (!password) {
+
+  const passwordValid = formValidate(password, {
+    required: true,
+    minlength: 8,
+  });
+  if (!passwordValid.success) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "password"),
-      400
-    );
-  } else if (password.length < 8) {
-    return ResponseHandler.error(
-      res,
-      ErrorHandler.create(ErrorCode.FIELD_INVALID, "password"),
-      400
+      { ...passwordValid.error, field: 'password' },
+      400,
     );
   }
 
@@ -55,45 +62,45 @@ module.exports.create = async (req, res, next) => {
 };
 
 module.exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email) {
+  const usernameValid = formValidate(username, { required: true });
+  if (!usernameValid.success) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "email"),
-      400
-    );
-  }
-  if (!password) {
-    return ResponseHandler.error(
-      res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "password"),
-      400
-    );
-  } else if (password.length < 8) {
-    return ResponseHandler.error(
-      res,
-      ErrorHandler.create(ErrorCode.FIELD_INVALID, "password"),
-      400
+      { ...usernameValid.error, field: 'username' },
+      400,
     );
   }
 
-  next();
-};
-
-module.exports.loginFacebook = async (req, res, next) => {
-  const { email } = req.body;
-
-  if (!email) {
+  const passwordValid = formValidate(password, {
+    required: true,
+    minlength: 8,
+  });
+  if (!passwordValid.success) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.FIELD_IS_REQUIRED, "email"),
-      400
+      { ...passwordValid.error, field: 'password' },
+      400,
     );
   }
 
   next();
 };
+
+// module.exports.loginFacebook = async (req, res, next) => {
+//   const { email } = req.body;
+
+//   if (!email) {
+//     return ResponseHandler.error(
+//       res,
+//       ErrorHandler.create(ErrorMessage.FIELD_IS_REQUIRED, 'email'),
+//       400,
+//     );
+//   }
+
+//   next();
+// };
 
 module.exports.authorization = async (req, res, next) => {
   const { authorization } = req.headers;
@@ -101,8 +108,8 @@ module.exports.authorization = async (req, res, next) => {
   if (!authorization) {
     return ResponseHandler.error(
       res,
-      ErrorHandler.create(ErrorCode.INVALID_TOKEN),
-      400
+      { message: ErrorMessage.INVALID_TOKEN },
+      400,
     );
   }
 

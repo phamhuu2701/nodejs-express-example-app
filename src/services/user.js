@@ -1,4 +1,5 @@
-const Repository = require("./../repository/user");
+const { ErrorMessage } = require('../variables/errorMessage');
+const Repository = require('./../repository/user');
 
 module.exports.find = async (req) => {
   try {
@@ -34,10 +35,44 @@ module.exports.findById = async (req) => {
 
 module.exports.update = async (req) => {
   try {
+    const { authorization } = req.headers;
     const { id } = req.params;
-    const data = req.body;
+    const {
+      first_name,
+      last_name,
+      gender,
+      address,
+      birthday,
+      avatar,
+      cover,
+    } = req.body;
 
-    return await Repository.update(id, data);
+    const data = {
+      first_name,
+      last_name,
+      gender,
+      address,
+      birthday,
+      avatar,
+      cover,
+    };
+
+    let user = await Repository.getUserByToken(authorization);
+    if (user) {
+      if (JSON.stringify(data) !== '{}') {
+        Object.keys(data).forEach((key) => {
+          if (data[key]) {
+            user[key] = data[key];
+          }
+        });
+
+        return await Repository.update(id, user);
+      } else {
+        throw { message: ErrorMessage.NO_THING_TO_UPDATE };
+      }
+    } else {
+      throw { message: ErrorMessage.NOT_FOUND };
+    }
   } catch (error) {
     throw error;
   }
@@ -55,9 +90,10 @@ module.exports.delete = async (req) => {
 
 module.exports.login = async (req) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
+    console.log('req.body :>> ', req.body);
 
-    return await Repository.login(email, password);
+    return await Repository.login(username, password);
   } catch (error) {
     throw error;
   }
@@ -66,24 +102,25 @@ module.exports.login = async (req) => {
 module.exports.getUserByToken = async (req) => {
   try {
     const { authorization } = req.headers;
+
     return await Repository.getUserByToken(authorization);
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.loginFacebook = async (req) => {
-  try {
-    const data = {
-      firstName: req.body.first_name,
-      lastName: req.body.last_name,
-      email: req.body.email,
-      password:
-        Math.random().toString(36).substring(7) +
-        Math.random().toString(36).substring(7),
-    };
-    return await Repository.loginFacebook(data);
-  } catch (error) {
-    throw error;
-  }
-};
+// module.exports.loginFacebook = async (req) => {
+//   try {
+//     const data = {
+//       firstName: req.body.first_name,
+//       lastName: req.body.last_name,
+//       email: req.body.email,
+//       password:
+//         Math.random().toString(36).substring(7) +
+//         Math.random().toString(36).substring(7),
+//     };
+//     return await Repository.loginFacebook(data);
+//   } catch (error) {
+//     throw error;
+//   }
+// };

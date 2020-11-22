@@ -1,29 +1,20 @@
-"use strict";
-const mongoose = require("mongoose");
-const connection = require("../config/connection");
+const mongoose = require('mongoose');
+const connection = require('../config/connection');
 const Schema = mongoose.Schema;
 
 const schema = {
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-  },
-  phoneNumber: { type: String },
-  password: { type: String, required: true },
+  first_name: { type: String, required: true },
+  last_name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone_number: { type: String },
+  password: { type: String, required: true, min: 8 },
   gender: { type: Boolean, default: false },
-  role: { type: String, default: "USER" },
+  role: { type: Number, default: 0 },
+  address: { type: String },
   birthday: { type: Date },
-  ip: { type: String },
-  loginCount: { type: Number, default: 0 },
-  lastLoginAt: { type: Date },
-  active: { type: Boolean, default: false },
-  city: { type: Schema.ObjectId, ref: "Cities" },
   avatar: { type: String },
+  cover: { type: String },
+  activate: { type: Boolean, default: false },
 };
 
 const newSchema = new Schema(schema, {
@@ -31,19 +22,21 @@ const newSchema = new Schema(schema, {
   toJSON: {
     transform: function (doc, res) {
       delete res.password;
+      delete res.id;
     },
     virtuals: true,
   },
   toObject: {
     transform: function (doc, res) {
       delete res.password;
+      delete res.id;
     },
     virtuals: true,
   },
 });
 
-newSchema.virtual("fullName").get(function () {
-  return this.firstName + " " + this.lastName;
+newSchema.virtual('full_name').get(function () {
+  return this.first_name + ' ' + this.last_name;
 });
 
-module.exports = connection.model("Users", newSchema);
+module.exports = connection.model('Users', newSchema);

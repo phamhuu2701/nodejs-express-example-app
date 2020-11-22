@@ -1,9 +1,12 @@
-const Model = require("../models/users");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const CONFIG = require("../config");
-const { ErrorCode } = require("../utils/variables");
-const { ErrorHandler } = require("../utils/errorHandler");
+const Model = require('../models/users');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const CONFIG = require('../config');
+const { ErrorMessage } = require('../variables/errorMessage');
+const {
+  validateEmail,
+  validatePhoneNumber,
+} = require('../validator/formValidate');
 
 module.exports.find = async (page, limit, keyword) => {
   try {
@@ -11,10 +14,10 @@ module.exports.find = async (page, limit, keyword) => {
       keyword
         ? {
             $or: [
-              { firstName: new RegExp(keyword.toLowerCase(), "i") },
-              { lastName: new RegExp(keyword.toLowerCase(), "i") },
-              { email: new RegExp(keyword.toLowerCase(), "i") },
-              { phoneNumber: new RegExp(keyword.toLowerCase(), "i") },
+              { first_name: new RegExp(keyword.toLowerCase(), 'i') },
+              { last_name: new RegExp(keyword.toLowerCase(), 'i') },
+              { email: new RegExp(keyword.toLowerCase(), 'i') },
+              { phone_number: new RegExp(keyword.toLowerCase(), 'i') },
             ],
           }
         : {},
@@ -22,8 +25,7 @@ module.exports.find = async (page, limit, keyword) => {
         page,
         limit,
         sort: { createdAt: -1 },
-        populate: "city",
-      }
+      },
     );
   } catch (error) {
     throw error;
@@ -46,7 +48,11 @@ module.exports.create = async (model) => {
 
 module.exports.findById = async (id) => {
   try {
-    return await Model.findById(id).populate("city");
+    const res = await Model.findById(id);
+    if (!res) {
+      throw { message: ErrorMessage.NOT_FOUND };
+    }
+    return res;
   } catch (error) {
     throw error;
   }
@@ -54,7 +60,7 @@ module.exports.findById = async (id) => {
 
 module.exports.update = async (id, data) => {
   try {
-    return await Model.findByIdAndUpdate(id, data).populate("city");
+    return await Model.findOneAndUpdate({ _id: id }, data, { new: true });
   } catch (error) {
     throw error;
   }
@@ -62,7 +68,7 @@ module.exports.update = async (id, data) => {
 
 module.exports.delete = async (id) => {
   try {
-    return await Model.findByIdAnddelete(id);
+    return await Model.findOneAndDelete({ _id: id });
   } catch (error) {
     throw error;
   }
@@ -70,7 +76,15 @@ module.exports.delete = async (id) => {
 
 module.exports.findByEmail = async (email) => {
   try {
-    return await Model.findOne({ email }).populate("city");
+    return await Model.findOne({ email });
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports.findByPhoneNumber = async (phone_number) => {
+  try {
+    return await Model.findOne({ phone_number });
   } catch (error) {
     throw error;
   }
@@ -82,30 +96,30 @@ module.exports.generateToken = async (_id, email) => {
       expiresIn: CONFIG.JWT_EXPIRATION,
     });
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
-module.exports.login = async (email, password) => {
+module.exports.login = async (username, password) => {
   try {
-    const user = await this.findByEmail(email);
+    let user = null;
+
+    // check username is email or phone number
+    if (validateEmail(username)) {
+      user = await Model.findOne({ email: username });
+    } else if (validatePhoneNumber(username)) {
+      user = await Model.findOne({ phone_number: username });
+    } else {
+      throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
+    }
+
     if (!user) {
-      return Promise.reject(
-        ErrorHandler.create(ErrorCode.EMAIL_OR_PASSWORD_INCORRECT)
-      );
+      throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
     }
-    const passwordDecode = await bcrypt.compareSync(password, user.password);
-    if (!passwordDecode) {
-      return Promise.reject(
-        ErrorHandler.create(ErrorCode.EMAIL_OR_PASSWORD_INCORRECT)
-      );
+    const passwordCompare = await bcrypt.compareSync(password, user.password);
+    if (!passwordCompare) {
+      throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
     }
-
-    user.set("loginCount", user.loginCount + 1);
-    user.set("lastLoginAt", new Date());
-
-    const data = { loginCount: user.loginCount + 1, lastLoginAt: new Date() };
-    await this.update(user._id, data);
 
     const token = await this.generateToken(user._id, user.email);
     return { user, token };
@@ -116,49 +130,48 @@ module.exports.login = async (email, password) => {
 
 module.exports.decodeToken = async (token) => {
   try {
+    token = token.replace('Bearer ', '');
+
     return await jwt.verify(token, CONFIG.JWT_SECRET);
   } catch (error) {
-    throw new Error(error);
+    throw { message: ErrorMessage.INVALID_TOKEN };
   }
 };
 
 module.exports.getUserByToken = async (token) => {
   try {
-    const res = await this.decodeToken(token);
-    if (res && res.email) {
-      const user = this.findByEmail(res.email);
-      if (user) {
+    const decoded = await this.decodeToken(token);
+    if (decoded._id && decoded.email) {
+      const user = await this.findById(decoded._id);
+      if (user.email === decoded.email) {
         return user;
-      } else {
-        return Promise.reject(ErrorHandler.create(ErrorCode.INVALID_TOKEN));
       }
-    } else {
-      return Promise.reject(ErrorHandler.create(ErrorCode.INVALID_TOKEN));
     }
+    throw { message: ErrorMessage.INVALID_TOKEN };
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.loginFacebook = async (data) => {
-  try {
-    let user = await this.findByEmail(data.email);
-    if (!user) {
-      const res = await this.create(data);
-      if (res) {
-        user = res;
-      }
-    }
+// module.exports.loginFacebook = async (data) => {
+//   try {
+//     let user = await this.findByEmail(data.email);
+//     if (!user) {
+//       const res = await this.create(data);
+//       if (res) {
+//         user = res;
+//       }
+//     }
 
-    user.set("loginCount", user.loginCount + 1);
-    user.set("lastLoginAt", new Date());
+//     const _data = {
+//       loginCount: user.loginCount + 1,
+//       lastLoginAt: new Date(),
+//     };
+//     await this.update(user._id, _data);
 
-    const _data = { loginCount: user.loginCount + 1, lastLoginAt: new Date() };
-    await this.update(user._id, _data);
-
-    const token = await this.generateToken(user._id, user.email);
-    return { user, token };
-  } catch (error) {
-    throw error;
-  }
-};
+//     const token = await this.generateToken(user._id, user.email);
+//     return { user, token };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
