@@ -14,7 +14,8 @@ const schema = {
   birthday: { type: Date },
   avatar: { type: String },
   cover: { type: String },
-  activate: { type: Boolean, default: false },
+  email_activated: { type: Boolean, default: false },
+  phone_activate: { type: Boolean, default: false },
 };
 
 const newSchema = new Schema(schema, {

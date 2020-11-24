@@ -18,7 +18,6 @@
 /**
  * @param {Object} res
  * @param {Object} errors
- * @param {Number} status
  */
 const success = (res, payload) => {
   const response = {
@@ -32,7 +31,6 @@ const success = (res, payload) => {
  *
  * @param {Object} res
  * @param {Object} errors
- * @param {Number} status
  */
 const error = (res, error) => {
   let response = {

@@ -3,10 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const CONFIG = require('../config');
 const { ErrorMessage } = require('../variables/errorMessage');
-const {
-  validateEmail,
-  validatePhoneNumber,
-} = require('../validator/formValidate');
+const { validateEmail, validatePhoneNumber } = require('../utils/formValidate');
 
 module.exports.find = async (page, limit, keyword) => {
   try {
@@ -34,6 +31,21 @@ module.exports.find = async (page, limit, keyword) => {
 
 module.exports.create = async (model) => {
   try {
+    const { email, phone_number } = model;
+
+    if (email) {
+      const user = await Model.findOne({ email });
+      if (user) {
+        throw { message: ErrorMessage.EMAIL_ALREADY_EXISTS };
+      }
+    }
+    if (phone_number) {
+      const user = await Model.findOne({ phone_number });
+      if (user) {
+        throw { message: ErrorMessage.PHONE_NUMBER_ALREADY_EXISTS };
+      }
+    }
+
     const salt = bcrypt.genSaltSync(10);
     const passwordEncode = bcrypt.hashSync(model.password, salt);
 
@@ -49,10 +61,11 @@ module.exports.create = async (model) => {
 module.exports.findById = async (id) => {
   try {
     const res = await Model.findById(id);
-    if (!res) {
+    if (res) {
+      return res;
+    } else {
       throw { message: ErrorMessage.NOT_FOUND };
     }
-    return res;
   } catch (error) {
     throw error;
   }
@@ -76,7 +89,12 @@ module.exports.delete = async (id) => {
 
 module.exports.findByEmail = async (email) => {
   try {
-    return await Model.findOne({ email });
+    const res = await Model.findOne({ email });
+    if (res) {
+      return res;
+    } else {
+      throw { message: ErrorMessage.NOT_FOUND };
+    }
   } catch (error) {
     throw error;
   }
@@ -84,7 +102,12 @@ module.exports.findByEmail = async (email) => {
 
 module.exports.findByPhoneNumber = async (phone_number) => {
   try {
-    return await Model.findOne({ phone_number });
+    const res = await Model.findOne({ phone_number });
+    if (res) {
+      return res;
+    } else {
+      throw { message: ErrorMessage.NOT_FOUND };
+    }
   } catch (error) {
     throw error;
   }
@@ -104,10 +127,10 @@ module.exports.login = async (username, password) => {
   try {
     let user = null;
 
-    // check username is email or phone number
-    if (validateEmail(username)) {
+    // detect username is email or phone_number
+    if (validateEmail(username).success) {
       user = await Model.findOne({ email: username });
-    } else if (validatePhoneNumber(username)) {
+    } else if (validatePhoneNumber(username).success) {
       user = await Model.findOne({ phone_number: username });
     } else {
       throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
@@ -116,6 +139,7 @@ module.exports.login = async (username, password) => {
     if (!user) {
       throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
     }
+
     const passwordCompare = await bcrypt.compareSync(password, user.password);
     if (!passwordCompare) {
       throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
@@ -130,9 +154,9 @@ module.exports.login = async (username, password) => {
 
 module.exports.decodeToken = async (token) => {
   try {
-    token = token.replace('Bearer ', '');
+    const _token = token.replace('Bearer ', '');
 
-    return await jwt.verify(token, CONFIG.JWT_SECRET);
+    return await jwt.verify(_token, CONFIG.JWT_SECRET);
   } catch (error) {
     throw { message: ErrorMessage.INVALID_TOKEN };
   }

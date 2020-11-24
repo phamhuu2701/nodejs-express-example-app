@@ -5,16 +5,20 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const multer = require('multer');
+
+const upload = multer();
 
 const indexRouter = require('./src/routes/index');
 const usersRouter = require('./src/routes/users');
-
-const app = express();
+const uploadRouter = require('./src/routes/upload');
 
 // connect mongodb
 const CONFIG = require('./src/config');
 const mongodb = require('./src/connector/mongo');
 mongodb.connect(CONFIG.MONGO_URL);
+
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,12 +27,15 @@ app.set('view engine', 'pug');
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app.use(upload.none());
+
 app.use('/', indexRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users', upload.none(), usersRouter);
+app.use('/api/upload', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

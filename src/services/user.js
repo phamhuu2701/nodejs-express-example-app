@@ -1,11 +1,13 @@
-const { ErrorMessage } = require('../variables/errorMessage');
 const Repository = require('./../repository/user');
+const { ErrorMessage } = require('../variables/errorMessage');
+const { cloudinaryUploader } = require('../connector/coudinary');
 
 module.exports.find = async (req) => {
   try {
     const { page, limit, keyword } = req.query;
-    const _page = parseInt(page) || 1;
-    const _limit = parseInt(limit) || 10;
+
+    let _page = parseInt(page) || 1;
+    let _limit = parseInt(limit) || 10;
 
     return await Repository.find(_page, _limit, keyword);
   } catch (error) {
@@ -36,7 +38,6 @@ module.exports.findById = async (req) => {
 module.exports.update = async (req) => {
   try {
     const { authorization } = req.headers;
-    const { id } = req.params;
     const {
       first_name,
       last_name,
@@ -47,7 +48,7 @@ module.exports.update = async (req) => {
       cover,
     } = req.body;
 
-    const data = {
+    const fields = {
       first_name,
       last_name,
       gender,
@@ -59,14 +60,25 @@ module.exports.update = async (req) => {
 
     let user = await Repository.getUserByToken(authorization);
     if (user) {
-      if (JSON.stringify(data) !== '{}') {
-        Object.keys(data).forEach((key) => {
-          if (data[key]) {
-            user[key] = data[key];
-          }
-        });
+      // destroy avatar
+      if (fields.avatar) {
+        cloudinaryUploader.destroy(user.avatar);
+      }
 
-        return await Repository.update(id, user);
+      // destroy cover
+      if (fields.cover) {
+        cloudinaryUploader.destroy(user.cover);
+      }
+
+      let data = {};
+      Object.keys(fields).forEach((key) => {
+        if (fields[key]) {
+          data[key] = fields[key];
+        }
+      });
+
+      if (JSON.stringify(data) !== '{}') {
+        return await Repository.update(user._id, data);
       } else {
         throw { message: ErrorMessage.NO_THING_TO_UPDATE };
       }
@@ -91,7 +103,6 @@ module.exports.delete = async (req) => {
 module.exports.login = async (req) => {
   try {
     const { username, password } = req.body;
-    console.log('req.body :>> ', req.body);
 
     return await Repository.login(username, password);
   } catch (error) {

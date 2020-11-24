@@ -25,6 +25,14 @@ const CONFIG = {
   // jwt
   JWT_EXPIRATION: parseInt(process.env.JWT_EXPIRATION), // 86400 = 1 day
   JWT_SECRET: process.env.JWT_SECRET,
+
+  // cloundinary
+  UPLOAD_FOLDER_NAME: process.env.UPLOAD_FOLDER_NAME,
+  CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_SECRET_KEY: process.env.CLOUDINARY_SECRET_KEY,
+  CLOUDINARY_ENV: process.env.CLOUDINARY_ENV,
+  CLOUDINARY_UPLOAD_BASE_URL: process.env.CLOUDINARY_UPLOAD_BASE_URL,
 };
 
 module.exports = CONFIG;

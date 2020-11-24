@@ -9,18 +9,18 @@ mongoose.set('useUnifiedTopology', true);
 mongoose.Promise = Promise;
 
 const connection = mongoose.createConnection(CONFIG.MONGO_URL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 connection.on('connected', () => {
-    console.log('MongoDB connected to ' + CONFIG.MONGO_URL);
+  console.log('MongoDB connected to ' + CONFIG.MONGO_URL);
 });
 
 connection.on('error', function (err) {
-    console.error('MongoDB event error: ' + err);
+  console.error('MongoDB event error: ' + err);
 });
 
 module.exports = connection;
