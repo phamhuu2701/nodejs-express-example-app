@@ -1,8 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const DBControllers = require('../controllers/db');
 
-const Controller = require("../controllers/db");
-
-router.get("/create", Controller.create);
+router.get('/create', DBControllers.create);
 
 module.exports = router;

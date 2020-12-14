@@ -1,5 +1,5 @@
-const Service = require("../services/post");
-const ResponseHandler = require("../utils/responseHandler");
+const Service = require('../services/post');
+const ResponseHandler = require('../utils/responseHandler');
 
 module.exports.find = async (req, res) => {
   try {
@@ -30,17 +30,8 @@ module.exports.findById = async (req, res) => {
 
 module.exports.update = async (req, res) => {
   try {
-    await Service.update(req);
-    return ResponseHandler.success(res);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
-module.exports.updateUnauthorization = async (req, res) => {
-  try {
-    await Service.update(req);
-    return ResponseHandler.success(res);
+    const payload = await Service.update(req);
+    return ResponseHandler.success(res, payload);
   } catch (error) {
     return ResponseHandler.error(res, error);
   }

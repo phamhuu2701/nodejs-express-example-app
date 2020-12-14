@@ -1,75 +1,95 @@
-const Service = require('./../services/user');
+const UserServices = require('./../services/user');
 const ResponseHandler = require('../utils/responseHandler');
 
-module.exports.find = async (req, res) => {
+const find = async (req, res) => {
   try {
-    const payload = await Service.find(req);
+    const payload = await UserServices.find(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.create = async (req, res) => {
+const findById = async (req, res) => {
   try {
-    const payload = await Service.create(req);
+    const payload = await UserServices.findById(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.findById = async (req, res) => {
+const create = async (req, res) => {
   try {
-    const payload = await Service.findById(req);
+    const payload = await UserServices.create(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.update = async (req, res) => {
+const update = async (req, res) => {
   try {
-    const payload = await Service.update(req);
+    const payload = await UserServices.update(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.delete = async (req, res) => {
+const _delete = async (req, res) => {
   try {
-    await Service.delete(req);
+    await UserServices.delete(req);
     return ResponseHandler.success(res, {});
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.login = async (req, res) => {
+const login = async (req, res) => {
   try {
-    const payload = await Service.login(req);
+    const payload = await UserServices.login(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.getUserByToken = async (req, res) => {
+const getUserByToken = async (req, res) => {
   try {
-    const payload = await Service.getUserByToken(req);
+    const payload = await UserServices.getUserByToken(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
+    console.log(error);
     return ResponseHandler.error(res, error);
   }
 };
 
-// module.exports.loginFacebook = async (req, res) => {
-//   try {
-//     const payload = await Service.loginFacebook(req);
-//     return ResponseHandler.success(res, payload);
-//   } catch (error) {
-//     console.log(error);
-//     return ResponseHandler.error(res, error);
-//   }
-// };
+const loginFacebook = async (req, res) => {
+  try {
+    const payload = await UserServices.loginFacebook(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    console.log(error);
+    return ResponseHandler.error(res, error);
+  }
+};
+
+const UserControllers = {
+  find,
+  findById,
+  create,
+  update,
+  delete: _delete,
+  login,
+  getUserByToken,
+  loginFacebook
+}
+
+module.exports = UserControllers

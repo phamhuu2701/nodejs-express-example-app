@@ -1,17 +1,15 @@
 const express = require('express');
+const UserValidator = require('../validator/user');
 const router = express.Router();
+const UserControllers = require('./../controllers/user');
 
-const Controller = require('./../controllers/user');
-const Validater = require('./../validator/user');
-
-router.get('/', Controller.find);
-router.post('/', Validater.create, Controller.create);
-router.get('/:id', Controller.findById);
-router.put('/', Validater.authorization, Controller.update);
-router.delete('/:id', Controller.delete);
-
-router.post('/login', Controller.login);
-router.post('/me', Validater.authorization, Controller.getUserByToken);
-// router.post("/login-facebook", Validate.loginFacebook, Controller.loginFacebook);
+router.get('/', UserControllers.find);
+router.get('/:_id', UserControllers.findById);
+router.post('/', UserValidator.create, UserControllers.create);
+router.put('/', UserValidator.authorization, UserControllers.update);
+router.delete('/', UserValidator.authorization, UserControllers.delete);
+router.post('/login', UserValidator.login, UserControllers.login);
+router.post('/me', UserValidator.authorization, UserControllers.getUserByToken);
+router.post('/login-facebook', UserControllers.loginFacebook);
 
 module.exports = router;

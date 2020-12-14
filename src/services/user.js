@@ -1,46 +1,45 @@
-const Repository = require('./../repository/user');
-const { ErrorMessage } = require('../variables/errorMessage');
-const { cloudinaryUploader } = require('../connector/coudinary');
+const CloudinaryUploader = require('../connector/coudinary');
+const UserRepository = require('./../repository/user');
 
-module.exports.find = async (req) => {
+const find = async (req) => {
   try {
     const { page, limit, keyword } = req.query;
 
     let _page = parseInt(page) || 1;
     let _limit = parseInt(limit) || 10;
 
-    return await Repository.find(_page, _limit, keyword);
+    return await UserRepository.find({page: _page, limit: _limit, keyword});
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.create = async (req) => {
+const findById = async (req) => {
+  try {
+    const { _id } = req.params;
+
+    return await UserRepository.findById(_id);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const create = async (req) => {
   try {
     const data = req.body;
 
-    return await Repository.create(data);
+    return await UserRepository.create(data);
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.findById = async (req) => {
-  try {
-    const { id } = req.params;
-
-    return await Repository.findById(id);
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.update = async (req) => {
+const update = async (req) => {
   try {
     const { authorization } = req.headers;
     const {
-      first_name,
-      last_name,
+      firstName,
+      lastName,
       gender,
       address,
       birthday,
@@ -49,8 +48,8 @@ module.exports.update = async (req) => {
     } = req.body;
 
     const fields = {
-      first_name,
-      last_name,
+      firstName,
+      lastName,
       gender,
       address,
       birthday,
@@ -58,16 +57,16 @@ module.exports.update = async (req) => {
       cover,
     };
 
-    let user = await Repository.getUserByToken(authorization);
+    let user = await UserRepository.getUserByToken(authorization);
     if (user) {
       // destroy avatar
       if (fields.avatar) {
-        cloudinaryUploader.destroy(user.avatar);
+        CloudinaryUploader.destroy(user.avatar);
       }
 
       // destroy cover
       if (fields.cover) {
-        cloudinaryUploader.destroy(user.cover);
+        CloudinaryUploader.destroy(user.cover);
       }
 
       let data = {};
@@ -78,60 +77,68 @@ module.exports.update = async (req) => {
       });
 
       if (JSON.stringify(data) !== '{}') {
-        return await Repository.update(user._id, data);
+        return await UserRepository.update({_id: user._id, data});
       } else {
-        throw { message: ErrorMessage.NO_THING_TO_UPDATE };
+        throw { message: 'NO_THING_TO_UPDATE' };
       }
     } else {
-      throw { message: ErrorMessage.NOT_FOUND };
+      throw { message: 'NOT_FOUND' };
     }
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.delete = async (req) => {
+const _delete = async (req) => {
   try {
-    const { id } = req.params;
+    const { _id } = req.body;
 
-    return await Repository.delete(id);
+    return await UserRepository.delete(_id);
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.login = async (req) => {
+const login = async (req) => {
   try {
     const { username, password } = req.body;
 
-    return await Repository.login(username, password);
+    return await UserRepository.login({username, password});
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.getUserByToken = async (req) => {
+const getUserByToken = async (req) => {
   try {
     const { authorization } = req.headers;
 
-    return await Repository.getUserByToken(authorization);
+    return await UserRepository.getUserByToken(authorization);
   } catch (error) {
     throw error;
   }
 };
 
-// module.exports.loginFacebook = async (req) => {
-//   try {
-//     const data = {
-//       firstName: req.body.first_name,
-//       lastName: req.body.last_name,
-//       email: req.body.email,
-//       password:
-//         Math.random().toString(36).substring(7) +
-//         Math.random().toString(36).substring(7),
-//     };
-//     return await Repository.loginFacebook(data);
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+const loginFacebook = async (req) => {
+  try {
+    const {fb} = req.body;
+    let data = JSON.parse(fb)
+
+    return await UserRepository.loginFacebook(data);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const UserServices = {
+  find,
+  findById,
+  create,
+  update,
+  delete: _delete,
+  login,
+  getUserByToken,
+  loginFacebook
+}
+
+module.exports = UserServices

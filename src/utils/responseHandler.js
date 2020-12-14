@@ -18,10 +18,12 @@
 /**
  * @param {Object} res
  * @param {Object} errors
+ * @param {Object} status
  */
-const success = (res, payload) => {
+const success = (res, payload, status = 200) => {
   const response = {
     success: true,
+    status,
     payload,
   };
   return res.json(response);
@@ -31,10 +33,12 @@ const success = (res, payload) => {
  *
  * @param {Object} res
  * @param {Object} errors
+ * @param {Object} status
  */
-const error = (res, error) => {
+const error = (res, error, status = 500) => {
   let response = {
     success: false,
+    status,
     error,
   };
   return res.json(response);

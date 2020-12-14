@@ -1,14 +1,17 @@
-const Service = require("../services/db");
-const ResponseHandler = require("../utils/responseHandler");
+const DBServices = require('../services/db');
+const ResponseHandler = require('../utils/responseHandler');
 
-module.exports.create = async (req, res) => {
-  console.log("Creating defaut database..");
+const create = async (req, res) => {
   try {
-    const payload = await Service.create();
-    console.log("Create default database successfully!");
+    const payload = await DBServices.create(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
-    console.log("Create default database failed");
-    return ResponseHandler.error(res, error);
+    return ResponseHandler.error(res, {message: error.message});
   }
 };
+
+const DBControllers = {
+  create
+}
+
+module.exports = DBControllers

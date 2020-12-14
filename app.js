@@ -10,8 +10,10 @@ const multer = require('multer');
 const upload = multer();
 
 const indexRouter = require('./src/routes/index');
+const dbRouter = require('./src/routes/db');
 const usersRouter = require('./src/routes/users');
 const uploadRouter = require('./src/routes/upload');
+const postsRouter = require('./src/routes/posts');
 
 // connect mongodb
 const CONFIG = require('./src/config');
@@ -34,8 +36,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(upload.none());
 
 app.use('/', indexRouter);
+app.use('/api/db', dbRouter);
 app.use('/api/users', upload.none(), usersRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/posts', upload.none(), postsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

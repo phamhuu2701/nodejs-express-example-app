@@ -59,7 +59,9 @@ const destroy = (path) => {
   }
 };
 
-module.exports.cloudinaryUploader = {
+const CloudinaryUploader = {
   upload,
   destroy,
 };
+
+module.exports = CloudinaryUploader

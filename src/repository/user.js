@@ -1,20 +1,19 @@
 const Model = require('../models/users');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const CONFIG = require('../config');
-const { ErrorMessage } = require('../variables/errorMessage');
 const { validateEmail, validatePhoneNumber } = require('../utils/formValidate');
+const CONFIG = require('../config');
 
-module.exports.find = async (page, limit, keyword) => {
+const find = async ({page, limit, keyword}) => {
   try {
     return await Model.paginate(
       keyword
         ? {
             $or: [
-              { first_name: new RegExp(keyword.toLowerCase(), 'i') },
-              { last_name: new RegExp(keyword.toLowerCase(), 'i') },
+              { firstName: new RegExp(keyword.toLowerCase(), 'i') },
+              { lastName: new RegExp(keyword.toLowerCase(), 'i') },
               { email: new RegExp(keyword.toLowerCase(), 'i') },
-              { phone_number: new RegExp(keyword.toLowerCase(), 'i') },
+              { phoneNumber: new RegExp(keyword.toLowerCase(), 'i') },
             ],
           }
         : {},
@@ -27,22 +26,61 @@ module.exports.find = async (page, limit, keyword) => {
   } catch (error) {
     throw error;
   }
-};
+}
 
-module.exports.create = async (model) => {
+const findById = async (_id) => {
   try {
-    const { email, phone_number } = model;
+    const res = await Model.findById(_id);
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const findByEmail = async (email) => {
+  try {
+    const res = await Model.findOne({ email });
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const findByPhoneNumber = async (phoneNumber) => {
+  try {
+    const res = await Model.findOne({ phoneNumber });
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const create = async (model) => {
+  try {
+    const { email, phoneNumber } = model;
 
     if (email) {
       const user = await Model.findOne({ email });
       if (user) {
-        throw { message: ErrorMessage.EMAIL_ALREADY_EXISTS };
+        throw { message: 'EMAIL_ALREADY_EXISTS' };
       }
     }
-    if (phone_number) {
-      const user = await Model.findOne({ phone_number });
+    if (phoneNumber) {
+      const user = await Model.findOne({ phoneNumber });
       if (user) {
-        throw { message: ErrorMessage.PHONE_NUMBER_ALREADY_EXISTS };
+        throw { message: 'PHONE_NUMBER_ALREADY_EXISTS' };
       }
     }
 
@@ -56,64 +94,25 @@ module.exports.create = async (model) => {
   } catch (error) {
     throw error;
   }
-};
+}
 
-module.exports.findById = async (id) => {
+const update = async ({_id, data}) => {
   try {
-    const res = await Model.findById(id);
-    if (res) {
-      return res;
-    } else {
-      throw { message: ErrorMessage.NOT_FOUND };
-    }
+    return await Model.findOneAndUpdate({ _id }, data, { new: true });
   } catch (error) {
     throw error;
   }
-};
+}
 
-module.exports.update = async (id, data) => {
+const _delete = async (_id) => {
   try {
-    return await Model.findOneAndUpdate({ _id: id }, data, { new: true });
+    return await Model.findOneAndDelete({ _id });
   } catch (error) {
     throw error;
   }
-};
+}
 
-module.exports.delete = async (id) => {
-  try {
-    return await Model.findOneAndDelete({ _id: id });
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.findByEmail = async (email) => {
-  try {
-    const res = await Model.findOne({ email });
-    if (res) {
-      return res;
-    } else {
-      throw { message: ErrorMessage.NOT_FOUND };
-    }
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.findByPhoneNumber = async (phone_number) => {
-  try {
-    const res = await Model.findOne({ phone_number });
-    if (res) {
-      return res;
-    } else {
-      throw { message: ErrorMessage.NOT_FOUND };
-    }
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.generateToken = async (_id, email) => {
+const generateToken = async ({_id, email}) => {
   try {
     return await jwt.sign({ _id, email }, CONFIG.JWT_SECRET, {
       expiresIn: CONFIG.JWT_EXPIRATION,
@@ -123,36 +122,7 @@ module.exports.generateToken = async (_id, email) => {
   }
 };
 
-module.exports.login = async (username, password) => {
-  try {
-    let user = null;
-
-    // detect username is email or phone_number
-    if (validateEmail(username).success) {
-      user = await Model.findOne({ email: username });
-    } else if (validatePhoneNumber(username).success) {
-      user = await Model.findOne({ phone_number: username });
-    } else {
-      throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
-    }
-
-    if (!user) {
-      throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
-    }
-
-    const passwordCompare = await bcrypt.compareSync(password, user.password);
-    if (!passwordCompare) {
-      throw { message: ErrorMessage.USERNAME_OR_PASSWORD_INCORRECT };
-    }
-
-    const token = await this.generateToken(user._id, user.email);
-    return { user, token };
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.decodeToken = async (token) => {
+const decodeToken = async (token) => {
   try {
     const _token = token.replace('Bearer ', '');
 
@@ -162,40 +132,88 @@ module.exports.decodeToken = async (token) => {
   }
 };
 
-module.exports.getUserByToken = async (token) => {
+const login = async ({username, password}) => {
   try {
-    const decoded = await this.decodeToken(token);
-    if (decoded._id && decoded.email) {
-      const user = await this.findById(decoded._id);
-      if (user.email === decoded.email) {
-        return user;
-      }
+    let user = null;
+
+    // detect username is email or phone_number
+    if (validateEmail(username).success) {
+      user = await Model.findOne({ email: username });
+    } else if (validatePhoneNumber(username).success) {
+      user = await Model.findOne({ phone_number: username });
+    } else {
+      throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
     }
-    throw { message: ErrorMessage.INVALID_TOKEN };
+
+    if (!user) {
+      throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
+    }
+
+    const passwordCompare = await bcrypt.compareSync(password, user.password);
+    if (!passwordCompare) {
+      throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
+    }
+
+    const token = await generateToken({_id: user._id, email: user.email});
+    return { user, token };
   } catch (error) {
     throw error;
   }
 };
 
-// module.exports.loginFacebook = async (data) => {
-//   try {
-//     let user = await this.findByEmail(data.email);
-//     if (!user) {
-//       const res = await this.create(data);
-//       if (res) {
-//         user = res;
-//       }
-//     }
+const getUserByToken = async (token) => {
+  try {
+    const decoded = await decodeToken(token);
+    if (decoded._id && decoded.email) {
+      const user = await findById(decoded._id);
+      if (user.email === decoded.email) {
+        return user;
+      }
+    }
+    throw { message: 'INVALID_TOKEN' };
+  } catch (error) {
+    throw error;
+  }
+};
 
-//     const _data = {
-//       loginCount: user.loginCount + 1,
-//       lastLoginAt: new Date(),
-//     };
-//     await this.update(user._id, _data);
+const loginFacebook = async (data) => {
+  try {
+    const {email, name} = data
 
-//     const token = await this.generateToken(user._id, user.email);
-//     return { user, token };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+    let user = await Model.findOne({ email });
+    if (!user) {
+      // user register
+      let item = {
+        firstName: name.split(' ')[0],
+        lastName: name.split(' ')[1],
+        email,
+        password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
+        facebookLogin: JSON.stringify(data),
+        facebookAvatar: data.picture.data.url,
+      }
+      user = await create(item)
+    }
+
+    const token = await generateToken({_id: user._id, email: user.email});
+    return { user, token };
+  } catch (error) {
+    throw error;
+  }
+}
+
+const UserRepository = {
+  find,
+  findById,
+  findByEmail,
+  findByPhoneNumber,
+  create,
+  update,
+  delete: _delete,
+  generateToken,
+  decodeToken,
+  login,
+  getUserByToken,
+  loginFacebook
+}
+
+module.exports = UserRepository

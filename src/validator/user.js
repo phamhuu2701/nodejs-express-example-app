@@ -1,30 +1,22 @@
 const ResponseHandler = require('../utils/responseHandler');
 const { validateEmail, formValidate } = require('../utils/formValidate');
-const { ErrorMessage } = require('../variables/errorMessage');
 
-module.exports.create = async (req, res, next) => {
-  const { first_name, last_name, email, password } = req.body;
-  console.log('req.body :>> ', req.body);
+const create = async (req, res, next) => {
+  const { firstName, lastName, email, password } = req.body;
 
-  const firstNameValid = formValidate(first_name, { required: true });
+  const firstNameValid = formValidate(firstName, { required: true });
   if (!firstNameValid.success) {
-    return ResponseHandler.error(res, {
-      ...firstNameValid.error,
-      field: 'first_name',
-    });
+    return ResponseHandler.error(res, {...firstNameValid.error, fieldName: 'firstName'});
   }
 
-  const lastNameValid = formValidate(last_name, { required: true });
+  const lastNameValid = formValidate(lastName, { required: true });
   if (!lastNameValid.success) {
-    return ResponseHandler.error(res, {
-      ...lastNameValid.error,
-      field: 'last_name',
-    });
+    return ResponseHandler.error(res, {...lastNameValid.error, fieldName: 'lastName'});
   }
 
   let emailValid = formValidate(email, { required: true });
   if (!emailValid.success) {
-    return ResponseHandler.error(res, { ...emailValid.error, field: 'email' });
+    return ResponseHandler.error(res, {...emailValid.error, fieldName: 'email'});
   } else {
     emailValid = validateEmail(email);
     if (!emailValid.success) {
@@ -32,67 +24,45 @@ module.exports.create = async (req, res, next) => {
     }
   }
 
-  const passwordValid = formValidate(password, {
-    required: true,
-    minlength: 8,
-  });
+  const passwordValid = formValidate(password, {required: true, minlength: 8});
   if (!passwordValid.success) {
-    return ResponseHandler.error(res, {
-      ...passwordValid.error,
-      field: 'password',
-    });
+    return ResponseHandler.error(res, {...passwordValid.error, fieldName: 'password'});
   }
 
   next();
 };
 
-module.exports.login = async (req, res, next) => {
+const login = async (req, res, next) => {
   const { username, password } = req.body;
 
   const usernameValid = formValidate(username, { required: true });
   if (!usernameValid.success) {
-    return ResponseHandler.error(res, {
-      ...usernameValid.error,
-      field: 'username',
-    });
+    return ResponseHandler.error(res, {...usernameValid.error, fieldName: 'username'});
   }
 
-  const passwordValid = formValidate(password, {
-    required: true,
-    minlength: 8,
-  });
+  const passwordValid = formValidate(password, {required: true, minlength: 8});
   if (!passwordValid.success) {
-    return ResponseHandler.error(res, {
-      ...passwordValid.error,
-      field: 'password',
-    });
+    return ResponseHandler.error(res, {...passwordValid.error, fieldName: 'password'});
   }
 
   next();
 };
 
-module.exports.authorization = async (req, res, next) => {
+const authorization = async (req, res, next) => {
   const { authorization } = req.headers;
-
+  
   const authorizationValid = formValidate(authorization, { required: true });
   if (!authorizationValid.success) {
-    return ResponseHandler.error(res, {
-      message: ErrorMessage.UNAUTHORIZATION,
-    });
+    return ResponseHandler.error(res, {message: 'UNAUTHORIZATION'});
   }
-
+  
   next();
 };
 
-// module.exports.loginFacebook = async (req, res, next) => {
-//   const { email } = req.body;
+const UserValidator = {
+  create,
+  login,
+  authorization
+}
 
-//   if (!email) {
-//     return ResponseHandler.error(
-//       res,
-//       ErrorHandler.create(ErrorMessage.FIELD_IS_REQUIRED, 'email'),
-//     );
-//   }
-
-//   next();
-// };
+module.exports = UserValidator

@@ -1,24 +1,17 @@
-const Repository = require("../repository/db");
+const DBRepository = require('../repository/db');
 
-module.exports.create = async (req) => {
+const create = async (req) => {
   try {
-    const citiesPayload = await Repository.createCities();
-    const usersPayload = await Repository.createUsers();
-    const postsPayload = await Repository.createPosts();
-    const postsPayloadUpdated = await Repository.updatePosts();
-    const conversationsPayload = await Repository.createConversations();
-    const messagesPayload = await Repository.createMessages();
-
-    return {
-      citiesPayload,
-      usersPayload,
-      postsPayload,
-      postsPayloadUpdated,
-      conversationsPayload,
-      messagesPayload,
-    };
+    return await DBRepository.create()
   } catch (error) {
+    console.log('DB create failed');
     console.log(error);
     throw error;
   }
 };
+
+const DBServices = {
+  create,
+}
+
+module.exports = DBServices

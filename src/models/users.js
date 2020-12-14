@@ -3,19 +3,22 @@ const connection = require('../config/connection');
 const Schema = mongoose.Schema;
 
 const schema = {
-  first_name: { type: String, required: true },
-  last_name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  phone_number: { type: String },
+  phoneNumber: { type: String, default: '' },
   password: { type: String, required: true, min: 8 },
   gender: { type: Boolean, default: false },
   role: { type: Number, default: 0 },
-  address: { type: String },
-  birthday: { type: Date },
-  avatar: { type: String },
-  cover: { type: String },
-  email_activated: { type: Boolean, default: false },
-  phone_activate: { type: Boolean, default: false },
+  address: { type: String, default: '' },
+  birthday: { type: Date, default: Date.now },
+  avatar: { type: String, default: '' },
+  cover: { type: String, default: '' },
+  emailActivated: { type: Boolean, default: false },
+  phoneActivated: { type: Boolean, default: false },
+  loginCount: { type: Number, default: 0},
+  facebookLogin: {type: String, default: ''},
+  facebookAvatar: {type: String, default: ''},
 };
 
 const newSchema = new Schema(schema, {
@@ -24,6 +27,7 @@ const newSchema = new Schema(schema, {
     transform: function (doc, res) {
       delete res.password;
       delete res.id;
+      delete res.facebookLogin;
     },
     virtuals: true,
   },
@@ -31,13 +35,14 @@ const newSchema = new Schema(schema, {
     transform: function (doc, res) {
       delete res.password;
       delete res.id;
+      delete res.facebookLogin;
     },
     virtuals: true,
   },
 });
 
-newSchema.virtual('full_name').get(function () {
-  return this.first_name + ' ' + this.last_name;
+newSchema.virtual('fullName').get(function () {
+  return this.firstName + ' ' + this.lastName;
 });
 
 module.exports = connection.model('Users', newSchema);
