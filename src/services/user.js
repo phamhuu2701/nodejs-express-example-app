@@ -6,7 +6,7 @@ const find = async (req) => {
     const { page, limit, keyword } = req.query;
 
     let _page = parseInt(page) || 1;
-    let _limit = parseInt(limit) || 10;
+    let _limit = parseInt(limit) || 20;
 
     return await UserRepository.find({page: _page, limit: _limit, keyword});
   } catch (error) {
@@ -60,13 +60,13 @@ const update = async (req) => {
     let user = await UserRepository.getUserByToken(authorization);
     if (user) {
       // destroy avatar
-      if (fields.avatar) {
-        CloudinaryUploader.destroy(user.avatar);
+      if (fields.avatar && user.avatar && user.avatar !== fields.avatar) {
+        await CloudinaryUploader.destroy(user.avatar);
       }
 
       // destroy cover
-      if (fields.cover) {
-        CloudinaryUploader.destroy(user.cover);
+      if (fields.cover && user.cover && user.cover !== fields.cover) {
+        await CloudinaryUploader.destroy(user.cover);
       }
 
       let data = {};
@@ -121,7 +121,7 @@ const getUserByToken = async (req) => {
 
 const loginFacebook = async (req) => {
   try {
-    const {fb} = req.body;
+    const { fb } = req.body;
     let data = JSON.parse(fb)
 
     return await UserRepository.loginFacebook(data);

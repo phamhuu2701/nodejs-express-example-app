@@ -6,19 +6,17 @@ const schema = {
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  phoneNumber: { type: String, default: '' },
+  phoneNumber: { type: String },
   password: { type: String, required: true, min: 8 },
   gender: { type: Boolean, default: false },
   role: { type: Number, default: 0 },
-  address: { type: String, default: '' },
-  birthday: { type: Date, default: Date.now },
-  avatar: { type: String, default: '' },
-  cover: { type: String, default: '' },
+  address: { type: String },
+  birthday: { type: Date },
+  avatar: { type: String },
+  cover: { type: String },
   emailActivated: { type: Boolean, default: false },
   phoneActivated: { type: Boolean, default: false },
-  loginCount: { type: Number, default: 0},
-  facebookLogin: {type: String, default: ''},
-  facebookAvatar: {type: String, default: ''},
+  facebookLogin: {type: String},
 };
 
 const newSchema = new Schema(schema, {
@@ -43,6 +41,10 @@ const newSchema = new Schema(schema, {
 
 newSchema.virtual('fullName').get(function () {
   return this.firstName + ' ' + this.lastName;
+});
+
+newSchema.virtual('facebookAvatar').get(function () {
+  return this.facebookLogin ? JSON.parse(this.facebookLogin).picture.data.url : null;
 });
 
 module.exports = connection.model('Users', newSchema);

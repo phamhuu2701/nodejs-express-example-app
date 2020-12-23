@@ -2,7 +2,11 @@ const ResponseHandler = require('../utils/responseHandler');
 const { validateEmail, formValidate } = require('../utils/formValidate');
 
 const create = async (req, res, next) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, phoneNumber, password } = req.body;
+
+  if (!email && !phoneNumber) {
+    return ResponseHandler.error(res, {message: 'EMAIL_OR_PHONE_NUMBER_IS_REQUIRED'});
+  }
 
   const firstNameValid = formValidate(firstName, { required: true });
   if (!firstNameValid.success) {

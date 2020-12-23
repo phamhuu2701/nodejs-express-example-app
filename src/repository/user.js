@@ -41,32 +41,6 @@ const findById = async (_id) => {
   }
 }
 
-const findByEmail = async (email) => {
-  try {
-    const res = await Model.findOne({ email });
-    if (res) {
-      return res;
-    } else {
-      throw { message: 'NOT_FOUND' };
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
-const findByPhoneNumber = async (phoneNumber) => {
-  try {
-    const res = await Model.findOne({ phoneNumber });
-    if (res) {
-      return res;
-    } else {
-      throw { message: 'NOT_FOUND' };
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
 const create = async (model) => {
   try {
     const { email, phoneNumber } = model;
@@ -91,6 +65,32 @@ const create = async (model) => {
 
     const newModel = new Model(model);
     return await newModel.save();
+  } catch (error) {
+    throw error;
+  }
+}
+
+const findByEmail = async (email) => {
+  try {
+    const res = await Model.findOne({ email });
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const findByPhoneNumber = async (phoneNumber) => {
+  try {
+    const res = await Model.findOne({ phoneNumber });
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
   } catch (error) {
     throw error;
   }
@@ -128,7 +128,7 @@ const decodeToken = async (token) => {
 
     return await jwt.verify(_token, CONFIG.JWT_SECRET);
   } catch (error) {
-    throw { message: ErrorMessage.INVALID_TOKEN };
+    throw { message: 'INVALID_TOKEN' };
   }
 };
 
@@ -136,7 +136,7 @@ const login = async ({username, password}) => {
   try {
     let user = null;
 
-    // detect username is email or phone_number
+    // detect username is email or phoneNumber
     if (validateEmail(username).success) {
       user = await Model.findOne({ email: username });
     } else if (validatePhoneNumber(username).success) {
@@ -166,10 +166,11 @@ const getUserByToken = async (token) => {
     const decoded = await decodeToken(token);
     if (decoded._id && decoded.email) {
       const user = await findById(decoded._id);
-      if (user.email === decoded.email) {
+      if (user.email == decoded.email) {
         return user;
       }
     }
+
     throw { message: 'INVALID_TOKEN' };
   } catch (error) {
     throw error;
@@ -184,12 +185,11 @@ const loginFacebook = async (data) => {
     if (!user) {
       // user register
       let item = {
-        firstName: name.split(' ')[0],
-        lastName: name.split(' ')[1],
+        firstName: name.slice(0, name.indexOf(' ')),
+        lastName: name.slice(name.indexOf(' '), name.length),
         email,
         password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
         facebookLogin: JSON.stringify(data),
-        facebookAvatar: data.picture.data.url,
       }
       user = await create(item)
     }

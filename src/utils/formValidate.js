@@ -21,7 +21,7 @@ const VALILDATE_ERROR = {
   },
   pattern: {
     type: 'pattern',
-    message: 'FIELD_INVALID_PATTERN',
+    message: 'FIELD_INVALID',
   },
 };
 
