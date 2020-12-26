@@ -9,7 +9,7 @@ const convertPublicId = (str) => {
       .replace(/\s/g, '-')
       .replace(/---+/g, '-')
       .replace(/--+/g, '-');
-    let __str = _str.substring(0, 40).toLowerCase() + '-' + Date.now();
+    let __str = _str.substring(0, 60).toLowerCase() + '-' + Date.now();
     return __str;
   }
   return '';

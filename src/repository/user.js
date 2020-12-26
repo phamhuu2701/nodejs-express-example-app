@@ -179,19 +179,69 @@ const getUserByToken = async (token) => {
 
 const loginFacebook = async (data) => {
   try {
-    const {email, name} = data
+    const {email, name, picture} = data
 
     let user = await Model.findOne({ email });
     if (!user) {
-      // user register
+      // register user
       let item = {
-        firstName: name.slice(0, name.indexOf(' ')),
-        lastName: name.slice(name.indexOf(' '), name.length),
+        firstName: name.slice(0, name.indexOf(' ')).trim(),
+        lastName: name.slice(name.indexOf(' '), name.length).trim(),
         email,
         password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
         facebookLogin: JSON.stringify(data),
+        avatar: picture.data.url
       }
       user = await create(item)
+    } else {
+      // update user
+      if (JSON.stringify(data) !== JSON.stringify(user.facebookLogin)) {
+        let _data = {
+          firstName: name.slice(0, name.indexOf(' ')).trim(),
+          lastName: name.slice(name.indexOf(' '), name.length).trim(),
+          password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
+          facebookLogin: JSON.stringify(data),
+          avatar: picture.data.url
+        }
+        user = await update({_id: user._id, data: _data})
+      }
+    }
+
+    const token = await generateToken({_id: user._id, email: user.email});
+    return { user, token };
+  } catch (error) {
+    throw error;
+  }
+}
+
+const loginGoogle = async (data) => {
+  try {
+    const {profileObj} = data
+    const {email, givenName, familyName, imageUrl} = profileObj
+
+    let user = await Model.findOne({ email });
+    if (!user) {
+      // register user
+      let item = {
+        firstName: givenName,
+        lastName: familyName,
+        email,
+        password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
+        googleLogin: JSON.stringify(data),
+        avatar: imageUrl
+      }
+      user = await create(item)
+    } else {
+      // update user
+      if (JSON.stringify(data) !== JSON.stringify(user.googleLogin)) {
+        let _data = {
+          firstName: givenName,
+          lastName: familyName,
+          googleLogin: JSON.stringify(data),
+          avatar: imageUrl
+        }
+        user = await update({_id: user._id, data: _data})
+      }
     }
 
     const token = await generateToken({_id: user._id, email: user.email});
@@ -213,7 +263,8 @@ const UserRepository = {
   decodeToken,
   login,
   getUserByToken,
-  loginFacebook
+  loginFacebook,
+  loginGoogle
 }
 
 module.exports = UserRepository

@@ -6,17 +6,18 @@ const schema = {
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  emailActivated: { type: Boolean, default: false },
   phoneNumber: { type: String },
+  phoneActivated: { type: Boolean, default: false },
   password: { type: String, required: true, min: 8 },
   gender: { type: Boolean, default: false },
   role: { type: Number, default: 0 },
   address: { type: String },
   birthday: { type: Date },
-  avatar: { type: String },
-  cover: { type: String },
-  emailActivated: { type: Boolean, default: false },
-  phoneActivated: { type: Boolean, default: false },
+  avatar: { type: String, default: 'https://res.cloudinary.com/dxgbnd5t6/image/upload/v1608977200/haloha/assets/images/avatar_default_l4qllr.png' },
+  cover: { type: String, default: 'https://res.cloudinary.com/dxgbnd5t6/image/upload/v1608977201/haloha/assets/images/cover_default_yyilmd.jpg' },
   facebookLogin: {type: String},
+  googleLogin: {type: String},
 };
 
 const newSchema = new Schema(schema, {
@@ -26,6 +27,7 @@ const newSchema = new Schema(schema, {
       delete res.password;
       delete res.id;
       delete res.facebookLogin;
+      delete res.googleLogin;
     },
     virtuals: true,
   },
@@ -34,17 +36,14 @@ const newSchema = new Schema(schema, {
       delete res.password;
       delete res.id;
       delete res.facebookLogin;
+      delete res.googleLogin;
     },
     virtuals: true,
   },
 });
 
 newSchema.virtual('fullName').get(function () {
-  return this.firstName + ' ' + this.lastName;
-});
-
-newSchema.virtual('facebookAvatar').get(function () {
-  return this.facebookLogin ? JSON.parse(this.facebookLogin).picture.data.url : null;
+  return this.firstName.trim() + ' ' + this.lastName.trim();
 });
 
 module.exports = connection.model('Users', newSchema);

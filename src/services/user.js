@@ -1,3 +1,4 @@
+const CONFIG = require('../config');
 const CloudinaryUploader = require('../connector/coudinary');
 const UserRepository = require('./../repository/user');
 
@@ -37,46 +38,56 @@ const create = async (req) => {
 const update = async (req) => {
   try {
     const { authorization } = req.headers;
-    const {
-      firstName,
-      lastName,
-      gender,
-      address,
-      birthday,
-      avatar,
-      cover,
+    const { 
+      firstName, 
+      lastName, 
+      gender, 
+      address, 
+      birthday, 
+      avatar, 
+      cover 
     } = req.body;
 
-    const fields = {
-      firstName,
-      lastName,
-      gender,
-      address,
-      birthday,
-      avatar,
-      cover,
+    const fields = { 
+      firstName, 
+      lastName, 
+      gender, 
+      address, 
+      birthday, 
+      avatar, 
+      cover 
     };
 
     let user = await UserRepository.getUserByToken(authorization);
     if (user) {
+      let folderPath = 'haloha/uploads/'
+
       // destroy avatar
-      if (fields.avatar && user.avatar && user.avatar !== fields.avatar) {
-        await CloudinaryUploader.destroy(user.avatar);
+      if (fields.avatar && user.avatar && user.avatar != fields.avatar && user.avatar.indexOf(folderPath) >= 0) {
+        let firstIndex = user.avatar.indexOf(folderPath)
+        let lastIndex = user.avatar.lastIndexOf('.')
+        let path = firstIndex >= 0 ? user.avatar.slice(firstIndex, lastIndex) : ''
+        if (path) {
+          let avatarDeleted = await CloudinaryUploader.destroy(path);
+          console.log('avatarDeleted :>> ', avatarDeleted);
+        }
       }
 
       // destroy cover
-      if (fields.cover && user.cover && user.cover !== fields.cover) {
-        await CloudinaryUploader.destroy(user.cover);
+      if (fields.cover && user.cover && user.cover !== fields.cover && user.cover.indexOf(folderPath) >= 0) {
+        let firstIndex = user.cover.indexOf(folderPath)
+        let lastIndex = user.cover.lastIndexOf('.')
+        let path = firstIndex >= 0 ? user.cover.slice(firstIndex, lastIndex) : ''
+        if (path) {
+          let coverDeleted = await CloudinaryUploader.destroy(path);
+          console.log('coverDeleted :>> ', coverDeleted);
+        }
       }
 
       let data = {};
-      Object.keys(fields).forEach((key) => {
-        if (fields[key]) {
-          data[key] = fields[key];
-        }
-      });
+      Object.keys(fields).forEach((key) => fields[key] ? (data[key] = fields[key]) : null);
 
-      if (JSON.stringify(data) !== '{}') {
+      if (JSON.stringify(data) != '{}') {
         return await UserRepository.update({_id: user._id, data});
       } else {
         throw { message: 'NO_THING_TO_UPDATE' };
@@ -130,6 +141,17 @@ const loginFacebook = async (req) => {
   }
 };
 
+const loginGoogle = async (req) => {
+  try {
+    const { gg } = req.body;
+    let data = JSON.parse(gg)
+
+    return await UserRepository.loginGoogle(data);
+  } catch (error) {
+    throw error;
+  }
+};
+
 const UserServices = {
   find,
   findById,
@@ -138,7 +160,8 @@ const UserServices = {
   delete: _delete,
   login,
   getUserByToken,
-  loginFacebook
+  loginFacebook,
+  loginGoogle,
 }
 
 module.exports = UserServices

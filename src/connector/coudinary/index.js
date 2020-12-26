@@ -8,9 +8,9 @@ cloudinary.config({
   api_secret: CONFIG.CLOUDINARY_SECRET_KEY,
 });
 
-const imagesFolder = CONFIG.UPLOAD_FOLDER_NAME + '/uploads/images';
-const videosFolder = CONFIG.UPLOAD_FOLDER_NAME + '/uploads/videos';
-const filesFolder = CONFIG.UPLOAD_FOLDER_NAME + '/uploads/files';
+const imagesFolder = 'haloha/uploads/images';
+const videosFolder = 'haloha/uploads/videos';
+const filesFolder = 'haloha/uploads/files';
 
 const upload = (path, resource_type = 'image') => {
   try {

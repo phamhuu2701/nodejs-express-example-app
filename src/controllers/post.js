@@ -1,47 +1,57 @@
-const Service = require('../services/post');
+const PostServices = require('../services/post');
 const ResponseHandler = require('../utils/responseHandler');
 
-module.exports.find = async (req, res) => {
+const find = async (req, res) => {
   try {
-    const payload = await Service.find(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error, 404);
-  }
-};
-
-module.exports.create = async (req, res) => {
-  try {
-    const payload = await Service.create(req);
-    return ResponseHandler.success(res, payload, 201);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
-module.exports.findById = async (req, res) => {
-  try {
-    const payload = await Service.findById(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error, 404);
-  }
-};
-
-module.exports.update = async (req, res) => {
-  try {
-    const payload = await Service.update(req);
+    const payload = await PostServices.find(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
     return ResponseHandler.error(res, error);
   }
 };
 
-module.exports.delete = async (req, res) => {
+const findById = async (req, res) => {
   try {
-    await Service.delete(req);
-    return ResponseHandler.success(res, 204);
+    const payload = await PostServices.findById(req);
+    return ResponseHandler.success(res, payload);
   } catch (error) {
     return ResponseHandler.error(res, error);
   }
 };
+
+const create = async (req, res) => {
+  try {
+    const payload = await PostServices.create(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    const payload = await PostServices.update(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
+  }
+};
+
+const _delete = async (req, res) => {
+  try {
+    await PostServices.delete(req);
+    return ResponseHandler.success(res);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
+  }
+};
+
+const PostControllers = {
+  find,
+  findById,
+  create,
+  update,
+  delete: _delete,
+}
+
+module.exports = PostControllers

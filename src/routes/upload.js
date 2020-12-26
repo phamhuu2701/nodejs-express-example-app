@@ -54,8 +54,6 @@ router.post('/images', upload.array('images', 10), async (req, res, next) => {
             format: item.format,
             resource_type: item.resource_type,
           }));
-          console.log('upload images');
-          console.log(payload);
 
           return ResponseHandler.success(res, payload);
         })

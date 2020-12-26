@@ -17,10 +17,10 @@
 
 /**
  * @param {Object} res
- * @param {Object} errors
- * @param {Object} status
+ * @param {Object} error
+ * @param {String} status
  */
-const success = (res, payload, status = 200) => {
+const success = (res, payload, status = '') => {
   const response = {
     success: true,
     status,
@@ -32,14 +32,19 @@ const success = (res, payload, status = 200) => {
 /**
  *
  * @param {Object} res
- * @param {Object} errors
- * @param {Object} status
+ * @param {Object} error
+ * @param {String} status
  */
-const error = (res, error, status = 500) => {
+const error = (res, error, status = '') => {
+  console.log('ResponseHandler error :>> ', error);
   let response = {
     success: false,
     status,
-    error,
+    error: {
+      ...error,
+      message: error.message,
+      code: error.code,
+    },
   };
   return res.json(response);
 };

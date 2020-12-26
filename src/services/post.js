@@ -1,23 +1,32 @@
-const Repository = require('../repository/post');
+const PostRepository = require('../repository/post');
 const UserRepository = require('../repository/user');
 const convertPublicId = require('../utils/convertPublicId');
 const removeVietnameseTones = require('../utils/removeVietnameseTones');
-const { ErrorMessage } = require('../variables/errorMessage');
 
-module.exports.find = async (req) => {
+const find = async (req) => {
   try {
     const { page, limit, keyword, user } = req.query;
 
-    const _page = parseInt(page) || 1;
-    const _limit = parseInt(limit) || 10;
+    let _page = parseInt(page) || 1;
+    let _limit = parseInt(limit) || 20;
 
-    return await Repository.find(_page, _limit, keyword, user);
+    return await PostRepository.find({page: _page, limit: _limit, keyword});
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.create = async (req) => {
+const findById = async (req) => {
+  try {
+    const { _id } = req.params;
+
+    return await PostRepository.findById(_id);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const create = async (req) => {
   try {
     const { authorization } = req.headers;
     const data = req.body;
@@ -26,112 +35,115 @@ module.exports.create = async (req) => {
     if (user) {
       data.user = user._id;
 
-      let public_id = convertPublicId(removeVietnameseTones(data.title));
-      data.public_id = public_id;
+      let publicId = convertPublicId(removeVietnameseTones(data.title));
+      data.publicId = publicId;
 
-      return await Repository.create(data);
+      return await PostRepository.create(data);
     } else {
-      throw { message: ErrorMessage.UNAUTHORIZATION };
+      throw { message: 'UNAUTHORIZATION' };
     }
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.findById = async (req) => {
-  try {
-    const { id } = req.params;
-
-    return await Repository.findById(id);
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports.update = async (req) => {
+const update = async (req) => {
   try {
     const { authorization } = req.headers;
-    const { id } = req.params;
     const {
+      _id,
       title,
+      subtitle,
       content,
-      attachments,
       category,
-      likes,
-      comments,
-      views_count,
-      likes_count,
-      comments_count,
+      attachments,
       hashtags,
+      likes,
+      shares,
+      comments,
+      views,
     } = req.body;
 
     let user = await UserRepository.getUserByToken(authorization);
     if (user) {
-      if (String(user._id) === id) {
-        const fields = {
-          title,
-          content,
-          attachments,
-          category,
-          likes,
-          comments,
-          views_count,
-          likes_count,
-          comments_count,
-          hashtags,
-        };
-
-        let data = {};
-        Object.keys(fields).forEach((key) => {
-          if (fields[key]) {
-            data[key] = fields[key];
-
-            if (key === 'title') {
-              let public_id = convertPublicId(
-                removeVietnameseTones(fields[key]),
-              );
-              data.public_id = public_id;
+      let post = await PostRepository.findById(_id);
+      if (post) {
+        if (String(user._id) === String(post.user._id)) {
+          const fields = {
+            title,
+            subtitle,
+            content,
+            category,
+            attachments,
+            hashtags,
+            likes,
+            shares,
+            comments,
+            views,
+          };
+  
+          let data = {};
+          Object.keys(fields).forEach((key) => {
+            if (fields[key]) {
+              data[key] = fields[key];
+  
+              if (key === 'title') {
+                let publicId = convertPublicId(removeVietnameseTones(fields[key]));
+                data.publicId = publicId;
+              }
             }
+          });
+  
+          if (JSON.stringify(data) !== '{}') {
+            return await PostRepository.update({_id, data});
+          } else {
+            throw { message: 'NO_THING_TO_UPDATE' };
           }
-        });
-
-        if (JSON.stringify(data) !== '{}') {
-          return await Repository.update(id, data);
         } else {
-          throw { message: ErrorMessage.NO_THING_TO_UPDATE };
+          throw { message: 'NOT_FOUND' };
         }
       } else {
-        throw { message: ErrorMessage.ACCESS_DENIED };
+        throw { message: 'NOT_FOUND' };
       }
     } else {
-      throw { message: ErrorMessage.UNAUTHORIZATION };
+      throw { message: 'UNAUTHORIZATION' };
     }
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.delete = async (req) => {
+const _delete = async (req) => {
   try {
     const { authorization } = req.headers;
-    const { id } = req.params;
+    const { _id } = req.body;
 
-    const post = await Repository.findById(id);
+    const post = await PostRepository.findById(_id);
     if (post) {
       const user = await UserRepository.getUserByToken(authorization);
       if (user) {
         if (String(user._id) === String(post.user._id)) {
-          return await Repository.delete(id);
+          return await PostRepository.delete(_id);
         } else {
-          throw { message: ErrorMessage.ACCESS_DENIED };
+          throw { message: 'UNAUTHORIZATION' };
         }
       } else {
-        throw { message: ErrorMessage.UNAUTHORIZATION };
+        throw { message: 'UNAUTHORIZATION' };
       }
     } else {
-      throw { message: ErrorMessage.NOT_POST_FOUND };
+      throw { message: 'NOT_FOUND' };
     }
   } catch (error) {
     throw error;
   }
 };
+
+const PostServices = {
+  find,
+  findById,
+  create,
+  update,
+  delete: _delete,
+}
+
+module.exports = PostServices

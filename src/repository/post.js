@@ -1,26 +1,43 @@
 const Model = require('../models/posts');
 
-module.exports.find = async (page, limit, keyword, user) => {
+const find = async ({page, limit, keyword}) => {
   try {
-    let query = {};
-    if (keyword) {
-      query = { ...query, content: new RegExp(keyword.toLowerCase(), 'i') };
-    }
-    if (user) {
-      query = { ...query, user };
-    }
-    return await Model.paginate(query, {
-      page,
-      limit,
-      sort: { createdAt: -1 },
-      populate: 'user',
-    });
+    return await Model.paginate(
+      keyword
+        ? {
+            $or: [
+              { title: new RegExp(keyword.toLowerCase(), 'i') },
+              { subtitle: new RegExp(keyword.toLowerCase(), 'i') },
+              { content: new RegExp(keyword.toLowerCase(), 'i') },
+            ],
+          }
+        : {},
+      {
+        page,
+        limit,
+        sort: { createdAt: -1 },
+        populate: 'user',
+      },
+    );
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.create = async (model) => {
+const findById = async (_id) => {
+  try {
+    const res = await Model.findById(_id);
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const create = async (model) => {
   try {
     const newModel = new Model(model);
     return await newModel
@@ -30,28 +47,29 @@ module.exports.create = async (model) => {
     throw error;
   }
 };
-module.exports.findById = async (id) => {
+
+const update = async ({_id, data}) => {
   try {
-    return await Model.findById(id).populate('user');
+    return await Model.findOneAndUpdate({ _id }, data, { new: true }).populate('user');
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.update = async (id, data) => {
+const _delete = async (_id) => {
   try {
-    return await Model.findOneAndUpdate({ _id: id }, data, {
-      new: true,
-    }).populate('user');
+    return await Model.findOneAndDelete({ _id });
   } catch (error) {
     throw error;
   }
 };
 
-module.exports.delete = async (id) => {
-  try {
-    return await Model.findOneAndDelete({ _id: id });
-  } catch (error) {
-    throw error;
-  }
-};
+const PostRepository = {
+  find,
+  findById,
+  create,
+  update,
+  delete: _delete,
+}
+
+module.exports = PostRepository
