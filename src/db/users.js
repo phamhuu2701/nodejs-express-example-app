@@ -1,4 +1,5 @@
-const UsersDemo = [{
+module.exports.UsersDemo = 
+[{
   "firstName": "Bernard",
   "lastName": "Duddridge",
   "email": "admin@gmail.com",
@@ -552,6 +553,3 @@ const UsersDemo = [{
   "address": "15 Blue Bill Park Trail",
   "phoneNumber": "534-791-9539"
 }]
-
-
-module.exports = UsersDemo

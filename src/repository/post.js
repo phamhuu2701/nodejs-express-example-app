@@ -1,17 +1,20 @@
 const Model = require('../models/posts');
 
-const find = async ({page, limit, keyword}) => {
+const find = async ({page, limit, keyword, type, category}) => {
   try {
+    let query = {}
+    if (type) {query = {...query, type}}
+    if (category) {query = {...query, category}}
+    if (keyword) {query = {
+      ...query, 
+      $or: [
+        { title: new RegExp(keyword.toLowerCase(), 'i') },
+        { subtitle: new RegExp(keyword.toLowerCase(), 'i') },
+        { content: new RegExp(keyword.toLowerCase(), 'i') },
+      ],}
+    }
     return await Model.paginate(
-      keyword
-        ? {
-            $or: [
-              { title: new RegExp(keyword.toLowerCase(), 'i') },
-              { subtitle: new RegExp(keyword.toLowerCase(), 'i') },
-              { content: new RegExp(keyword.toLowerCase(), 'i') },
-            ],
-          }
-        : {},
+      query,
       {
         page,
         limit,
@@ -26,7 +29,40 @@ const find = async ({page, limit, keyword}) => {
 
 const findById = async (_id) => {
   try {
-    const res = await Model.findById(_id);
+    const res = await Model.findOne({_id}).populate('user');
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const findByPublicId = async (publicId) => {
+  try {
+    const res = await Model.findOne({publicId}).populate('user');
+    if (res) {
+      return res;
+    } else {
+      throw { message: 'NOT_FOUND' };
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const findByIdOrPublicId = async (id) => {
+  try {
+    let res = null
+    if (id.indexOf('-') >= 0) {
+      // get by publicId
+      res = await Model.findOne({publicId: id}).populate('user');
+    } else {
+      // get by id
+      res = await Model.findOne({_id: id}).populate('user');
+    }
     if (res) {
       return res;
     } else {
@@ -67,6 +103,8 @@ const _delete = async (_id) => {
 const PostRepository = {
   find,
   findById,
+  findByPublicId,
+  findByIdOrPublicId,
   create,
   update,
   delete: _delete,

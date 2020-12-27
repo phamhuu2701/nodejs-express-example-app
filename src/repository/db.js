@@ -1,5 +1,5 @@
-const PostsDemo = require("../db/posts");
-const UsersDemo = require("../db/users");
+const {PostsDemo} = require("../db/posts");
+const {UsersDemo} = require("../db/users");
 const convertPublicId = require("../utils/convertPublicId");
 const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const PostRepository = require("./post");
@@ -69,6 +69,7 @@ const createPosts = async () => {
         item.comments = Math.floor(Math.random() * 10000000)
         item.shares = Math.floor(Math.random() * 10000000)
         item.views = Math.floor(Math.random() * 10000000)
+        item.content = `<div><p>${item.content}</p></div>`
         
         item.attachments = [
           `https://source.unsplash.com/random/400x300?sig=${Math.floor(Math.random() * 1000)}`,
@@ -79,6 +80,7 @@ const createPosts = async () => {
         ]
 
         item.hashtags = [
+          `hashtag-${Math.floor(Math.random() * 1000)}`,
           `hashtag-${Math.floor(Math.random() * 1000)}`,
           `hashtag-${Math.floor(Math.random() * 1000)}`,
         ]
@@ -96,8 +98,8 @@ const createPosts = async () => {
         }
       }
       
-      if (temp === PostRepository.length) {
-        console.log(`Posts created: ${temp}/${PostRepository.length}`);
+      if (temp === PostsDemo.length) {
+        console.log(`Posts created: ${temp}/${PostsDemo.length}`);
       } else {
         console.log(`Create Posts failed`);
       }

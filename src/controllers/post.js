@@ -19,6 +19,24 @@ const findById = async (req, res) => {
   }
 };
 
+const findByPublicId = async (req, res) => {
+  try {
+    const payload = await PostServices.findByPublicId(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
+  }
+};
+
+const findByIdOrPublicId = async (req, res) => {
+  try {
+    const payload = await PostServices.findByIdOrPublicId(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
+  }
+};
+
 const create = async (req, res) => {
   try {
     const payload = await PostServices.create(req);
@@ -49,6 +67,8 @@ const _delete = async (req, res) => {
 const PostControllers = {
   find,
   findById,
+  findByPublicId,
+  findByIdOrPublicId,
   create,
   update,
   delete: _delete,

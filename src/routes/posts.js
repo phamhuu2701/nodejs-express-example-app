@@ -5,7 +5,9 @@ const PostController = require('../controllers/post');
 const UserValidator = require('./../validator/user');
 
 router.get('/', PostController.find);
-router.get('/:_id', PostController.findById);
+// router.get('/:_id', PostController.findById);
+// router.get('/:publicId', PostController.findByPublicId);
+router.get('/:id', PostController.findByIdOrPublicId);
 router.post('/', UserValidator.authorization, PostController.create);
 router.put('/', UserValidator.authorization, PostController.update);
 router.delete('/', UserValidator.authorization, PostController.delete);

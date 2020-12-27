@@ -5,12 +5,18 @@ const removeVietnameseTones = require('../utils/removeVietnameseTones');
 
 const find = async (req) => {
   try {
-    const { page, limit, keyword, user } = req.query;
+    const { page, limit, keyword, type, category } = req.query;
 
     let _page = parseInt(page) || 1;
     let _limit = parseInt(limit) || 20;
+    let _category = category 
+      ? category === 'all' 
+        ? '' 
+        : category 
+      : ''
+    let _type = type || 'post'
 
-    return await PostRepository.find({page: _page, limit: _limit, keyword});
+    return await PostRepository.find({page: _page, limit: _limit, keyword, type: _type, category: _category});
   } catch (error) {
     throw error;
   }
@@ -21,6 +27,26 @@ const findById = async (req) => {
     const { _id } = req.params;
 
     return await PostRepository.findById(_id);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findByPublicId = async (req) => {
+  try {
+    const { publicId } = req.params;
+
+    return await PostRepository.findByPublicId(publicId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findByIdOrPublicId = async (req) => {
+  try {
+    const { id } = req.params;
+
+    return await PostRepository.findByIdOrPublicId(id);
   } catch (error) {
     throw error;
   }
@@ -141,6 +167,8 @@ const _delete = async (req) => {
 const PostServices = {
   find,
   findById,
+  findByPublicId,
+  findByIdOrPublicId,
   create,
   update,
   delete: _delete,
