@@ -112,11 +112,6 @@ const update = async (req) => {
           Object.keys(fields).forEach((key) => {
             if (fields[key]) {
               data[key] = fields[key];
-  
-              if (key === 'title') {
-                let publicId = convertPublicId(removeVietnameseTones(fields[key]));
-                data.publicId = publicId;
-              }
             }
           });
   
