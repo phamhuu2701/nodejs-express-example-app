@@ -5,7 +5,7 @@ const removeVietnameseTones = require('../utils/removeVietnameseTones');
 
 const find = async (req) => {
   try {
-    const { page, limit, keyword, type, category } = req.query;
+    const { page, limit, keyword, type, category, hashtag } = req.query;
 
     let _page = parseInt(page) || 1;
     let _limit = parseInt(limit) || 20;
@@ -15,8 +15,9 @@ const find = async (req) => {
         : category 
       : ''
     let _type = type || 'post'
+    let _hashtag = hashtag || ''
 
-    return await PostRepository.find({page: _page, limit: _limit, keyword, type: _type, category: _category});
+    return await PostRepository.find({page: _page, limit: _limit, keyword, type: _type, category: _category, hashtag: _hashtag});
   } catch (error) {
     throw error;
   }
@@ -79,7 +80,6 @@ const update = async (req) => {
     const {
       _id,
       title,
-      subtitle,
       content,
       category,
       attachments,
@@ -97,7 +97,6 @@ const update = async (req) => {
         if (String(user._id) === String(post.user._id)) {
           const fields = {
             title,
-            subtitle,
             content,
             category,
             attachments,
@@ -118,7 +117,7 @@ const update = async (req) => {
           if (JSON.stringify(data) !== '{}') {
             return await PostRepository.update({_id, data});
           } else {
-            throw { message: 'NO_THING_TO_UPDATE' };
+            throw { message: 'NOTHING_TO_UPDATE' };
           }
         } else {
           throw { message: 'NOT_FOUND' };
@@ -139,20 +138,20 @@ const _delete = async (req) => {
     const { authorization } = req.headers;
     const { _id } = req.body;
 
-    const post = await PostRepository.findById(_id);
-    if (post) {
-      const user = await UserRepository.getUserByToken(authorization);
-      if (user) {
+    const user = await UserRepository.getUserByToken(authorization);
+    if (user) {
+      const post = await PostRepository.findById(_id);
+      if (post) {
         if (String(user._id) === String(post.user._id)) {
           return await PostRepository.delete(_id);
         } else {
           throw { message: 'UNAUTHORIZATION' };
         }
       } else {
-        throw { message: 'UNAUTHORIZATION' };
+        throw { message: 'NOT_FOUND' };
       }
     } else {
-      throw { message: 'NOT_FOUND' };
+      throw { message: 'UNAUTHORIZATION' };
     }
   } catch (error) {
     throw error;

@@ -1,6 +1,15 @@
 const UserServices = require('./../services/user');
 const ResponseHandler = require('../utils/responseHandler');
 
+const create = async (req, res) => {
+  try {
+    const payload = await UserServices.create(req);
+    return ResponseHandler.success(res, payload);
+  } catch (error) {
+    return ResponseHandler.error(res, error);
+  }
+};
+
 const find = async (req, res) => {
   try {
     const payload = await UserServices.find(req);
@@ -13,15 +22,6 @@ const find = async (req, res) => {
 const findById = async (req, res) => {
   try {
     const payload = await UserServices.findById(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
-const create = async (req, res) => {
-  try {
-    const payload = await UserServices.create(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
     return ResponseHandler.error(res, error);
@@ -83,9 +83,9 @@ const loginGoogle = async (req, res) => {
 };
 
 const UserControllers = {
+  create,
   find,
   findById,
-  create,
   update,
   delete: _delete,
   login,

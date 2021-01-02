@@ -4,6 +4,34 @@ const jwt = require('jsonwebtoken');
 const { validateEmail, validatePhoneNumber } = require('../utils/formValidate');
 const CONFIG = require('../config');
 
+const create = async (model) => {
+  try {
+    const { email, phoneNumber } = model;
+
+    if (email) {
+      const user = await Model.findOne({ email });
+      if (user) {
+        throw { message: 'EMAIL_ALREADY_EXISTS' };
+      }
+    }
+    if (phoneNumber) {
+      const user = await Model.findOne({ phoneNumber });
+      if (user) {
+        throw { message: 'PHONE_NUMBER_ALREADY_EXISTS' };
+      }
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const passwordEncode = bcrypt.hashSync(model.password, salt);
+    model.password = passwordEncode;
+
+    const newModel = new Model(model);
+    return await newModel.save();
+  } catch (error) {
+    throw error;
+  }
+}
+
 const find = async ({page, limit, keyword}) => {
   try {
     return await Model.paginate(
@@ -36,35 +64,6 @@ const findById = async (_id) => {
     } else {
       throw { message: 'NOT_FOUND' };
     }
-  } catch (error) {
-    throw error;
-  }
-}
-
-const create = async (model) => {
-  try {
-    const { email, phoneNumber } = model;
-
-    if (email) {
-      const user = await Model.findOne({ email });
-      if (user) {
-        throw { message: 'EMAIL_ALREADY_EXISTS' };
-      }
-    }
-    if (phoneNumber) {
-      const user = await Model.findOne({ phoneNumber });
-      if (user) {
-        throw { message: 'PHONE_NUMBER_ALREADY_EXISTS' };
-      }
-    }
-
-    const salt = bcrypt.genSaltSync(10);
-    const passwordEncode = bcrypt.hashSync(model.password, salt);
-
-    model.password = passwordEncode;
-
-    const newModel = new Model(model);
-    return await newModel.save();
   } catch (error) {
     throw error;
   }
@@ -189,7 +188,6 @@ const loginFacebook = async (data) => {
         lastName: name.slice(name.indexOf(' '), name.length).trim(),
         email,
         password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
-        facebookLogin: JSON.stringify(data),
         avatar: picture.data.url
       }
       user = await create(item)
@@ -200,7 +198,6 @@ const loginFacebook = async (data) => {
           firstName: name.slice(0, name.indexOf(' ')).trim(),
           lastName: name.slice(name.indexOf(' '), name.length).trim(),
           password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
-          facebookLogin: JSON.stringify(data),
           avatar: picture.data.url
         }
         user = await update({_id: user._id, data: _data})
@@ -227,7 +224,6 @@ const loginGoogle = async (data) => {
         lastName: familyName,
         email,
         password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
-        googleLogin: JSON.stringify(data),
         avatar: imageUrl
       }
       user = await create(item)
@@ -237,7 +233,6 @@ const loginGoogle = async (data) => {
         let _data = {
           firstName: givenName,
           lastName: familyName,
-          googleLogin: JSON.stringify(data),
           avatar: imageUrl
         }
         user = await update({_id: user._id, data: _data})
@@ -252,11 +247,11 @@ const loginGoogle = async (data) => {
 }
 
 const UserRepository = {
+  create,
   find,
   findById,
   findByEmail,
   findByPhoneNumber,
-  create,
   update,
   delete: _delete,
   generateToken,

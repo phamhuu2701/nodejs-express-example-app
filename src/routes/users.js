@@ -7,7 +7,7 @@ router.get('/', UserControllers.find);
 router.get('/:_id', UserControllers.findById);
 router.post('/', UserValidator.create, UserControllers.create);
 router.put('/', UserValidator.authorization, UserControllers.update);
-router.delete('/', UserValidator.authorization, UserControllers.delete);
+// router.delete('/', UserValidator.authorization, UserControllers.delete);
 router.post('/login', UserValidator.login, UserControllers.login);
 router.post('/me', UserValidator.authorization, UserControllers.getUserByToken);
 router.post('/login-facebook', UserControllers.loginFacebook);

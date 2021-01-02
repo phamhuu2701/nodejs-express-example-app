@@ -10,6 +10,7 @@ const createUsers = async () => {
     let payload = await UserRepository.find({page: 1, limit: 1});
     if (payload.docs.length === 0) {
       console.log('Users empty');
+      console.log('Users creating..');
 
       let temp = 0
       for (let i=0; i<UsersDemo.length; i++) {
@@ -59,6 +60,7 @@ const createPosts = async () => {
     let payload = await PostRepository.find({page: 1, limit: 1});
     if (payload.docs.length === 0) {
       console.log('Posts empty');
+      console.log('Posts creating..');
 
       let temp = 0
       for (let i=0; i<PostsDemo.length; i++) {
@@ -69,7 +71,9 @@ const createPosts = async () => {
         item.comments = Math.floor(Math.random() * 10000000)
         item.shares = Math.floor(Math.random() * 10000000)
         item.views = Math.floor(Math.random() * 10000000)
-        item.content = `<div><p>${item.content}</p></div>`
+        
+        item.content = item.content.replace(/\n/g, '<br />')
+        item.content = `<div><p>${item.content}</p><img alt="${item.title}" src="https://source.unsplash.com/random"></img></div>`
         
         item.attachments = [
           `https://source.unsplash.com/random/400x300?sig=${Math.floor(Math.random() * 1000)}`,
@@ -87,7 +91,7 @@ const createPosts = async () => {
 
         item.publicId = convertPublicId(removeVietnameseTones(item.title));
 
-        let user = await UserRepository.findByEmail('admin@gmail.com')
+        let user = await UserRepository.findByEmail('phamhuu2701@gmail.com')
         if (user) {
           item.user = user._id
         }

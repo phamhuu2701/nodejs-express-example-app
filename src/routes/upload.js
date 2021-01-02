@@ -26,7 +26,7 @@ router.post('/image', upload.single('image'), async (req, res, next) => {
 
       return ResponseHandler.success(res, payload);
     } else {
-      throw {message: 'NO_THING_TO_UPLOAD'}
+      throw {message: 'NOTHING_TO_UPLOAD'}
     }
   } catch (error) {
     return ResponseHandler.error(res, { message: error.message });
@@ -61,7 +61,7 @@ router.post('/images', upload.array('images', 10), async (req, res, next) => {
           return ResponseHandler.error(res, { message: error.message });
         });
     } else {
-      throw {message: 'NO_THING_TO_UPLOAD'}
+      throw {message: 'NOTHING_TO_UPLOAD'}
     }
   } catch (error) {
     return ResponseHandler.error(res, { message: error.message });

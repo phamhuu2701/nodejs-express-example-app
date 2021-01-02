@@ -1,6 +1,15 @@
-const CONFIG = require('../config');
 const CloudinaryUploader = require('../connector/coudinary');
 const UserRepository = require('./../repository/user');
+
+const create = async (req) => {
+  try {
+    const data = req.body;
+
+    return await UserRepository.create(data);
+  } catch (error) {
+    throw error;
+  }
+};
 
 const find = async (req) => {
   try {
@@ -20,16 +29,6 @@ const findById = async (req) => {
     const { _id } = req.params;
 
     return await UserRepository.findById(_id);
-  } catch (error) {
-    throw error;
-  }
-};
-
-const create = async (req) => {
-  try {
-    const data = req.body;
-
-    return await UserRepository.create(data);
   } catch (error) {
     throw error;
   }
@@ -90,10 +89,10 @@ const update = async (req) => {
       if (JSON.stringify(data) != '{}') {
         return await UserRepository.update({_id: user._id, data});
       } else {
-        throw { message: 'NO_THING_TO_UPDATE' };
+        throw { message: 'NOTHING_TO_UPDATE' };
       }
     } else {
-      throw { message: 'NOT_FOUND' };
+      throw { message: 'UNAUTHORIZATION' };
     }
   } catch (error) {
     throw error;
@@ -102,9 +101,14 @@ const update = async (req) => {
 
 const _delete = async (req) => {
   try {
-    const { _id } = req.body;
+    const { authorization } = req.headers;
 
-    return await UserRepository.delete(_id);
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user) {
+      return await UserRepository.delete(user._id);
+    } else {
+      throw { message: 'UNAUTHORIZATION' };
+    }
   } catch (error) {
     throw error;
   }
@@ -153,9 +157,9 @@ const loginGoogle = async (req) => {
 };
 
 const UserServices = {
+  create,
   find,
   findById,
-  create,
   update,
   delete: _delete,
   login,

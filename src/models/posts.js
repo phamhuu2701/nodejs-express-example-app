@@ -6,11 +6,10 @@ const TYPES = ['post', 'picture', 'video']
 
 const schema = {
   title: { type: String, required: true },
-  subtitle: { type: String, required: '' },
   publicId: { type: String, required: true },
   content: { type: String, required: true },
-  category: { type: String, default: '' },
   type: { type: String, default: TYPES[0] },
+  category: { type: String, default: '' },
   attachments: [{ type: String }],
   hashtags: [{ type: String }],
   user: { type: Schema.ObjectId, ref: 'Users' },

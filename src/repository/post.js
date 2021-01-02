@@ -1,10 +1,11 @@
 const Model = require('../models/posts');
 
-const find = async ({page, limit, keyword, type, category}) => {
+const find = async ({page, limit, keyword, type, category, hashtag}) => {
   try {
     let query = {}
     if (type) {query = {...query, type}}
     if (category) {query = {...query, category}}
+    if (hashtag) {query = {...query, hashtags: hashtag}}
     if (keyword) {query = {
       ...query, 
       $or: [
