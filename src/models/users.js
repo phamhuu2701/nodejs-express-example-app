@@ -6,13 +6,17 @@ const schema = {
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  emailActive: { type: Boolean, default: false },
   phoneNumber: { type: String },
-  password: { type: String, required: true, min: 8 },
+  phoneNumberActive: { type: Boolean, default: false },
+  password: { type: String, required: true, minLength: 8 },
   gender: { type: Boolean, default: false },
   address: { type: String },
   birthday: { type: Date },
-  avatar: { type: String, default: 'https://source.unsplash.com/random/300x300' },
-  cover: { type: String, default: 'https://source.unsplash.com/random/1600x400' },
+  avatar: { type: String, default: 'https://source.unsplash.com/random/400x400' },
+  cover: { type: String, default: 'https://source.unsplash.com/random/1200x900' },
+  role: { type: Number, enum: [0, 1, 2], default: 0 },
+  loginCount: { type: Number, defaut: 0 },
 };
 
 const newSchema = new Schema(schema, {

@@ -11,13 +11,13 @@ const create = async (model) => {
     if (email) {
       const user = await Model.findOne({ email });
       if (user) {
-        throw { message: 'EMAIL_ALREADY_EXISTS' };
+        throw { message: 'EMAIL_ALREADY_EXISTS', code: 'EMAIL_ALREADY_EXISTS' };
       }
     }
     if (phoneNumber) {
       const user = await Model.findOne({ phoneNumber });
       if (user) {
-        throw { message: 'PHONE_NUMBER_ALREADY_EXISTS' };
+        throw { message: 'PHONE_NUMBER_ALREADY_EXISTS', code: 'PHONE_NUMBER_ALREADY_EXISTS' };
       }
     }
 
@@ -28,11 +28,12 @@ const create = async (model) => {
     const newModel = new Model(model);
     return await newModel.save();
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
-const find = async ({page, limit, keyword}) => {
+const find = async ({ page, limit, keyword }) => {
   try {
     return await Model.paginate(
       keyword
@@ -52,9 +53,10 @@ const find = async ({page, limit, keyword}) => {
       },
     );
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
 const findById = async (_id) => {
   try {
@@ -65,9 +67,10 @@ const findById = async (_id) => {
       throw { message: 'NOT_FOUND' };
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
 const findByEmail = async (email) => {
   try {
@@ -78,9 +81,10 @@ const findByEmail = async (email) => {
       throw { message: 'NOT_FOUND' };
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
 const findByPhoneNumber = async (phoneNumber) => {
   try {
@@ -91,32 +95,34 @@ const findByPhoneNumber = async (phoneNumber) => {
       throw { message: 'NOT_FOUND' };
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
-const update = async ({_id, data}) => {
+const update = async ({ _id, data }) => {
   try {
     return await Model.findOneAndUpdate({ _id }, data, { new: true });
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
 const _delete = async (_id) => {
   try {
     return await Model.findOneAndDelete({ _id });
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
-const generateToken = async ({_id, email}) => {
+const generateToken = async ({ _id, email }) => {
   try {
-    return await jwt.sign({ _id, email }, CONFIG.JWT_SECRET, {
-      expiresIn: CONFIG.JWT_EXPIRATION,
-    });
+    return await jwt.sign({ _id, email }, CONFIG.JWT_SECRET, { expiresIn: CONFIG.JWT_EXPIRATION });
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
@@ -127,11 +133,12 @@ const decodeToken = async (token) => {
 
     return await jwt.verify(_token, CONFIG.JWT_SECRET);
   } catch (error) {
+    console.log(error);
     throw { message: 'INVALID_TOKEN' };
   }
 };
 
-const login = async ({username, password}) => {
+const login = async ({ username, password }) => {
   try {
     let user = null;
 
@@ -139,7 +146,7 @@ const login = async ({username, password}) => {
     if (validateEmail(username).success) {
       user = await Model.findOne({ email: username });
     } else if (validatePhoneNumber(username).success) {
-      user = await Model.findOne({ phone_number: username });
+      user = await Model.findOne({ phoneNumber: username });
     } else {
       throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
     }
@@ -153,9 +160,10 @@ const login = async ({username, password}) => {
       throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
     }
 
-    const token = await generateToken({_id: user._id, email: user.email});
+    const token = await generateToken({ _id: user._id, email: user.email });
     return { user, token };
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
@@ -165,20 +173,21 @@ const getUserByToken = async (token) => {
     const decoded = await decodeToken(token);
     if (decoded._id && decoded.email) {
       const user = await findById(decoded._id);
-      if (user.email == decoded.email) {
+      if (user.email === decoded.email) {
         return user;
       }
     }
 
     throw { message: 'INVALID_TOKEN' };
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
 const loginFacebook = async (data) => {
   try {
-    const {email, name, picture} = data
+    const { email, name, picture } = data;
 
     let user = await Model.findOne({ email });
     if (!user) {
@@ -188,33 +197,35 @@ const loginFacebook = async (data) => {
         lastName: name.slice(name.indexOf(' '), name.length).trim(),
         email,
         password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
-        avatar: picture.data.url
-      }
-      user = await create(item)
+        avatar: picture.data.url,
+      };
+      user = await create(item);
     } else {
       // update user
       if (JSON.stringify(data) !== JSON.stringify(user.facebookLogin)) {
         let _data = {
           firstName: name.slice(0, name.indexOf(' ')).trim(),
           lastName: name.slice(name.indexOf(' '), name.length).trim(),
-          password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
-          avatar: picture.data.url
-        }
-        user = await update({_id: user._id, data: _data})
+          password:
+            Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
+          avatar: picture.data.url,
+        };
+        user = await update({ _id: user._id, data: _data });
       }
     }
 
-    const token = await generateToken({_id: user._id, email: user.email});
+    const token = await generateToken({ _id: user._id, email: user.email });
     return { user, token };
   } catch (error) {
+    console.log(error);
     throw error;
   }
-}
+};
 
 const loginGoogle = async (data) => {
   try {
-    const {profileObj} = data
-    const {email, givenName, familyName, imageUrl} = profileObj
+    const { profileObj } = data;
+    const { email, givenName, familyName, imageUrl } = profileObj;
 
     let user = await Model.findOne({ email });
     if (!user) {
@@ -224,27 +235,29 @@ const loginGoogle = async (data) => {
         lastName: familyName,
         email,
         password: Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
-        avatar: imageUrl
-      }
-      user = await create(item)
+        avatar: imageUrl,
+      };
+      user = await create(item);
     } else {
       // update user
       if (JSON.stringify(data) !== JSON.stringify(user.googleLogin)) {
         let _data = {
           firstName: givenName,
           lastName: familyName,
-          avatar: imageUrl
-        }
-        user = await update({_id: user._id, data: _data})
+          password:
+            Math.random().toString(36).substring(5) + Math.random().toString(36).substring(5),
+          avatar: imageUrl,
+        };
+        user = await update({ _id: user._id, data: _data });
       }
     }
 
-    const token = await generateToken({_id: user._id, email: user.email});
+    const token = await generateToken({ _id: user._id, email: user.email });
     return { user, token };
   } catch (error) {
     throw error;
   }
-}
+};
 
 const UserRepository = {
   create,
@@ -259,7 +272,7 @@ const UserRepository = {
   login,
   getUserByToken,
   loginFacebook,
-  loginGoogle
-}
+  loginGoogle,
+};
 
-module.exports = UserRepository
+module.exports = UserRepository;

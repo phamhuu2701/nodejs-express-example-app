@@ -1,4 +1,4 @@
-# haloha-backend
+# example-app-backend
 
 Haloha backend version 0.1.0
 
