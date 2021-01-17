@@ -40,6 +40,7 @@ const upload = (path, resource_type = 'image') => {
         .catch((err) => reject(err));
     });
   } catch (err) {
+    console.log(error);
     throw error;
   }
 };
@@ -55,6 +56,7 @@ const destroy = (path) => {
       });
     });
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };

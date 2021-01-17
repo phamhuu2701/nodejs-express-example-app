@@ -15,9 +15,9 @@ const connection = mongoose.createConnection(CONFIG.MONGO_URL, {
   useFindAndModify: false,
 });
 
-connection.on('connected', () => {
-  console.log('MongoDB connected to ' + CONFIG.MONGO_URL);
-});
+// connection.on('connected', () => {
+//   console.log('MongoDB connected to ' + CONFIG.MONGO_URL);
+// });
 
 connection.on('error', function (err) {
   console.error('MongoDB event error: ' + err);
