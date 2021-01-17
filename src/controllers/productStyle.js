@@ -1,5 +1,5 @@
 const ResponseHandler = require('../utils/responseHandler');
-const Service = require('./../services/user');
+const Service = require('../services/productStyle');
 
 const create = async (req, res) => {
   try {
@@ -46,50 +46,10 @@ const _delete = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
-  try {
-    const payload = await Service.login(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
-const getUserByToken = async (req, res) => {
-  try {
-    const payload = await Service.getUserByToken(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
-const loginFacebook = async (req, res) => {
-  try {
-    const payload = await Service.loginFacebook(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
-const loginGoogle = async (req, res) => {
-  try {
-    const payload = await Service.loginGoogle(req);
-    return ResponseHandler.success(res, payload);
-  } catch (error) {
-    return ResponseHandler.error(res, error);
-  }
-};
-
 module.exports = {
   create,
   find,
   findById,
   update,
   delete: _delete,
-  login,
-  getUserByToken,
-  loginFacebook,
-  loginGoogle,
 };

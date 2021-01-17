@@ -11,9 +11,12 @@ const upload = multer();
 
 const indexRouter = require('./src/routes/index');
 const dbRouter = require('./src/routes/db');
-const usersRouter = require('./src/routes/users');
+const usersRouter = require('./src/routes/user');
 const uploadRouter = require('./src/routes/upload');
-const postsRouter = require('./src/routes/posts');
+const productColorRouter = require('./src/routes/productColor');
+const productMaterialRouter = require('./src/routes/productMaterial');
+const productSizeRouter = require('./src/routes/productSize');
+const productStyleRouter = require('./src/routes/productStyle');
 
 // connect mongodb
 const CONFIG = require('./src/config');
@@ -39,7 +42,10 @@ app.use('/', indexRouter);
 app.use('/api/db', dbRouter);
 app.use('/api/users', upload.none(), usersRouter);
 app.use('/api/upload', uploadRouter);
-app.use('/api/posts', upload.none(), postsRouter);
+app.use('/api/product-colors', productColorRouter);
+app.use('/api/product-materials', productMaterialRouter);
+app.use('/api/product-sizes', productSizeRouter);
+app.use('/api/product-styles', productStyleRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

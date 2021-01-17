@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validateEmail, validatePhoneNumber } = require('../utils/formValidate');
 const CONFIG = require('../config');
+const ErrorCode = require('../utils/errorCode');
 
 const create = async (model) => {
   try {
@@ -11,13 +12,19 @@ const create = async (model) => {
     if (email) {
       const user = await Model.findOne({ email });
       if (user) {
-        throw { message: 'EMAIL_ALREADY_EXISTS', code: 'EMAIL_ALREADY_EXISTS' };
+        throw {
+          message: ErrorCode.EMAIL_ALREADY_EXISTS,
+          code: ErrorCode.EMAIL_ALREADY_EXISTS,
+        };
       }
     }
     if (phoneNumber) {
       const user = await Model.findOne({ phoneNumber });
       if (user) {
-        throw { message: 'PHONE_NUMBER_ALREADY_EXISTS', code: 'PHONE_NUMBER_ALREADY_EXISTS' };
+        throw {
+          message: ErrorCode.PHONE_NUMBER_ALREADY_EXISTS,
+          code: ErrorCode.PHONE_NUMBER_ALREADY_EXISTS,
+        };
       }
     }
 
@@ -64,7 +71,7 @@ const findById = async (_id) => {
     if (res) {
       return res;
     } else {
-      throw { message: 'NOT_FOUND' };
+      throw { message: ErrorCode.NOT_FOUND, code: ErrorCode.NOT_FOUND };
     }
   } catch (error) {
     console.log(error);
@@ -78,7 +85,7 @@ const findByEmail = async (email) => {
     if (res) {
       return res;
     } else {
-      throw { message: 'NOT_FOUND' };
+      throw { message: ErrorCode.NOT_FOUND, code: ErrorCode.NOT_FOUND };
     }
   } catch (error) {
     console.log(error);
@@ -92,7 +99,7 @@ const findByPhoneNumber = async (phoneNumber) => {
     if (res) {
       return res;
     } else {
-      throw { message: 'NOT_FOUND' };
+      throw { message: ErrorCode.NOT_FOUND, code: ErrorCode.NOT_FOUND };
     }
   } catch (error) {
     console.log(error);
@@ -134,7 +141,7 @@ const decodeToken = async (token) => {
     return await jwt.verify(_token, CONFIG.JWT_SECRET);
   } catch (error) {
     console.log(error);
-    throw { message: 'INVALID_TOKEN' };
+    throw { message: ErrorCode.INVALID_TOKEN, code: ErrorCode.INVALID_TOKEN };
   }
 };
 
@@ -148,16 +155,25 @@ const login = async ({ username, password }) => {
     } else if (validatePhoneNumber(username).success) {
       user = await Model.findOne({ phoneNumber: username });
     } else {
-      throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
+      throw {
+        message: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+        code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+      };
     }
 
     if (!user) {
-      throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
+      throw {
+        message: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+        code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+      };
     }
 
     const passwordCompare = await bcrypt.compareSync(password, user.password);
     if (!passwordCompare) {
-      throw { message: 'USERNAME_OR_PASSWORD_INCORRECT' };
+      throw {
+        message: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+        code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+      };
     }
 
     const token = await generateToken({ _id: user._id, email: user.email });
@@ -178,7 +194,7 @@ const getUserByToken = async (token) => {
       }
     }
 
-    throw { message: 'INVALID_TOKEN' };
+    throw { message: ErrorCode.INVALID_TOKEN, code: ErrorCode.INVALID_TOKEN };
   } catch (error) {
     console.log(error);
     throw error;
@@ -259,7 +275,7 @@ const loginGoogle = async (data) => {
   }
 };
 
-const UserRepository = {
+module.exports = {
   create,
   find,
   findById,
@@ -274,5 +290,3 @@ const UserRepository = {
   loginFacebook,
   loginGoogle,
 };
-
-module.exports = UserRepository;

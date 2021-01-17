@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const CloudinaryUploader = require('../connector/coudinary');
+const ErrorCode = require('../utils/errorCode');
 const ResponseHandler = require('../utils/responseHandler');
 
 const storage = multer.diskStorage({
@@ -40,7 +41,7 @@ router.post('/images', upload.array('images', 10), async (req, res, next) => {
           return ResponseHandler.error(res, { message: error.message });
         });
     } else {
-      throw { message: 'NOTHING_TO_UPLOAD' };
+      throw { message: ErrorCode.NOTHING_TO_UPLOAD, code: ErrorCode.NOTHING_TO_UPLOAD };
     }
   } catch (error) {
     console.log(error);

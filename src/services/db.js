@@ -1,15 +1,13 @@
-const DBRepository = require('../repository/db');
+const Repository = require('../repositories/db');
 
 const create = async (req) => {
   try {
-    return await DBRepository.create()
+    return await Repository.create();
   } catch (error) {
     throw error;
   }
 };
 
-const DBServices = {
+module.exports = {
   create,
-}
-
-module.exports = DBServices
+};

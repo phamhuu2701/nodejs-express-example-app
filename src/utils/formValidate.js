@@ -1,33 +1,35 @@
+const ErrorCode = require('./errorCode');
+
 const VALILDATE_ERROR = {
   required: {
     type: 'required',
-    message: 'FIELD_IS_REQUIRED',
-    code: 'FIELD_IS_REQUIRED',
+    message: ErrorCode.FIELD_IS_REQUIRED,
+    code: ErrorCode.FIELD_IS_REQUIRED,
   },
   min: {
     type: 'min',
-    message: 'FIELD_INVALID',
-    code: 'FIELD_INVALID',
+    message: ErrorCode.FIELD_INVALID,
+    code: ErrorCode.FIELD_INVALID,
   },
   max: {
     type: 'max',
-    message: 'FIELD_INVALID',
-    code: 'FIELD_INVALID',
+    message: ErrorCode.FIELD_INVALID,
+    code: ErrorCode.FIELD_INVALID,
   },
   minlength: {
     type: 'minlength',
-    message: 'FIELD_INVALID',
-    code: 'FIELD_INVALID',
+    message: ErrorCode.FIELD_INVALID,
+    code: ErrorCode.FIELD_INVALID,
   },
   maxlength: {
     type: 'maxlength',
-    message: 'FIELD_INVALID',
-    code: 'FIELD_INVALID',
+    message: ErrorCode.FIELD_INVALID,
+    code: ErrorCode.FIELD_INVALID,
   },
   pattern: {
     type: 'pattern',
-    message: 'FIELD_INVALID',
-    code: 'FIELD_INVALID',
+    message: ErrorCode.FIELD_INVALID,
+    code: ErrorCode.FIELD_INVALID,
   },
 };
 
@@ -46,7 +48,7 @@ module.exports.validateEmail = (value) => {
     ? { success: true }
     : {
         success: false,
-        error: { type: 'email', message: 'FIELD_INVALID', code: 'FIELD_INVALID' },
+        error: { type: 'email', message: ErrorCode.FIELD_INVALID, code: ErrorCode.FIELD_INVALID },
       };
 };
 
@@ -57,7 +59,10 @@ module.exports.validateEmail = (value) => {
 module.exports.validatePhoneNumber = (value) => {
   return Boolean(value)
     ? { success: true }
-    : { success: false, error: { type: 'tel', message: 'FIELD_INVALID', code: 'FIELD_INVALID' } };
+    : {
+        success: false,
+        error: { type: 'tel', message: ErrorCode.FIELD_INVALID, code: ErrorCode.FIELD_INVALID },
+      };
 };
 
 /**

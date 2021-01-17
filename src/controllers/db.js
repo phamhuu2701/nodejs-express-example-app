@@ -1,17 +1,15 @@
-const DBServices = require('../services/db');
 const ResponseHandler = require('../utils/responseHandler');
+const Service = require('../services/db');
 
 const create = async (req, res) => {
   try {
-    const payload = await DBServices.create(req);
+    const payload = await Service.create(req);
     return ResponseHandler.success(res, payload);
   } catch (error) {
-    return ResponseHandler.error(res, {message: error.message});
+    return ResponseHandler.error(res, { message: error.message });
   }
 };
 
-const DBControllers = {
-  create
-}
-
-module.exports = DBControllers
+module.exports = {
+  create,
+};

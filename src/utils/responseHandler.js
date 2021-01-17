@@ -36,7 +36,6 @@ const success = (res, payload, status = '') => {
  * @param {String} status
  */
 const error = (res, error, status = '') => {
-  console.log('ResponseHandler error :>> ', error);
   let response = {
     success: false,
     status,
