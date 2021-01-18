@@ -56,23 +56,13 @@ const update = async (req) => {
     let user = await Repository.getUserByToken(authorization);
     if (user) {
       // destroy avatar
-      if (
-        fields.avatar &&
-        user.avatar &&
-        user.avatar != fields.avatar &&
-        user.avatar.indexOf(folderPath) >= 0
-      ) {
+      if (fields.avatar && user.avatar && user.avatar != fields.avatar) {
         let avatarDeleted = await CloudinaryUploader.destroy(user.avatar);
         console.log('avatarDeleted :>> ', avatarDeleted);
       }
 
       // destroy cover
-      if (
-        fields.cover &&
-        user.cover &&
-        user.cover !== fields.cover &&
-        user.cover.indexOf(folderPath) >= 0
-      ) {
+      if (fields.cover && user.cover && user.cover !== fields.cover) {
         let coverDeleted = await CloudinaryUploader.destroy(user.cover);
         console.log('coverDeleted :>> ', coverDeleted);
       }

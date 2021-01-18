@@ -5,7 +5,7 @@ const Controller = require('../controllers/user');
 
 router.get('/', Controller.find);
 router.get('/:_id', Controller.findById);
-router.post('/', Validator.create, Controller.create);
+router.post('/', Controller.create);
 router.put('/', Validator.authorization, Controller.update);
 // router.delete('/', Validator.authorization, Controller.delete);
 router.post('/login', Validator.login, Controller.login);

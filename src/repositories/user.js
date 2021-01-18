@@ -28,9 +28,11 @@ const create = async (model) => {
       }
     }
 
-    const salt = bcrypt.genSaltSync(10);
-    const passwordEncode = bcrypt.hashSync(model.password, salt);
-    model.password = passwordEncode;
+    if (model.password) {
+      const salt = bcrypt.genSaltSync(10);
+      const passwordEncode = bcrypt.hashSync(model.password, salt);
+      model.password = passwordEncode;
+    }
 
     const newModel = new Model(model);
     return await newModel.save();
@@ -166,18 +168,25 @@ const login = async ({ username, password }) => {
         message: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
         code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
       };
-    }
+    } else {
+      const passwordCompare = await bcrypt.compareSync(password, user.password);
+      if (!passwordCompare) {
+        throw {
+          message: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+          code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
+        };
+      } else {
+        // update login count
+        user = await Model.findOneAndUpdate(
+          { _id: user._id },
+          { loginCount: user.loginCount + 1 },
+          { new: true },
+        );
 
-    const passwordCompare = await bcrypt.compareSync(password, user.password);
-    if (!passwordCompare) {
-      throw {
-        message: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
-        code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
-      };
+        const token = await generateToken({ _id: user._id, email: user.email });
+        return { user, token };
+      }
     }
-
-    const token = await generateToken({ _id: user._id, email: user.email });
-    return { user, token };
   } catch (error) {
     console.log(error);
     throw error;

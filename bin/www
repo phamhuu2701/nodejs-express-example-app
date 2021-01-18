@@ -5,7 +5,7 @@
  */
 
 const app = require("../app");
-const debug = require("debug")("example-app-backend:server");
+const debug = require("debug")("nodejs-express-example-app:server");
 const http = require("http");
 const CONFIG = require("../src/config");
 const { onSocketConnect } = require("../src/socket");

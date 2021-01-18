@@ -3,7 +3,7 @@ const connection = require('../config/connection');
 const Schema = mongoose.Schema;
 
 const schema = {
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true, trim: true, maxlength: 30 },
 };
 
 const newSchema = new Schema(schema, {

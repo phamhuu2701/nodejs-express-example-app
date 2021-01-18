@@ -1,4 +1,4 @@
-# example-app-backend
+# nodejs-express-example-app
 
 Haloha backend version 0.1.0
 
