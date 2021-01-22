@@ -57,14 +57,12 @@ const update = async (req) => {
     if (user) {
       // destroy avatar
       if (fields.avatar && user.avatar && user.avatar != fields.avatar) {
-        let avatarDeleted = await CloudinaryUploader.destroy(user.avatar);
-        console.log('avatarDeleted :>> ', avatarDeleted);
+        await CloudinaryUploader.destroy(user.avatar);
       }
 
       // destroy cover
       if (fields.cover && user.cover && user.cover !== fields.cover) {
-        let coverDeleted = await CloudinaryUploader.destroy(user.cover);
-        console.log('coverDeleted :>> ', coverDeleted);
+        await CloudinaryUploader.destroy(user.cover);
       }
 
       let data = {};

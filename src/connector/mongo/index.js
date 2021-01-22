@@ -11,10 +11,9 @@ module.exports.connect = async (dbUrl) => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     });
-
-    console.log('Mongodb connected');
+    console.log(`MongoDB connected`);
   } catch (error) {
-    console.log('Please make sure Mongodb is installed and running!');
+    console.log(`Please make sure Mongodb is installed and running!`);
     throw error;
   }
 };

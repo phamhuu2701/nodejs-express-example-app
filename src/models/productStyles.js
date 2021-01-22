@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const connection = require('../config/connection');
+const connection = require('../connector/mongo/connection');
 const Schema = mongoose.Schema;
 
 const schema = {

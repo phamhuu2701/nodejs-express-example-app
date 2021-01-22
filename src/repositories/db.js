@@ -14,8 +14,8 @@ const createUsers = async () => {
   try {
     let payload = await UsersRepository.find({ page: 1, limit: 1 });
     if (payload.docs.length === 0) {
-      console.log('Users empty');
-      console.log('Users creating..');
+      console.log(`Users empty`);
+      console.log(`Users creating..`);
 
       let temp = 0;
       for (let i = 0; i < UsersDemo.length; i++) {
@@ -33,7 +33,7 @@ const createUsers = async () => {
         console.log(`Create Users failed`);
       }
     } else {
-      console.log('Users exists');
+      console.log(`Users exists`);
       return payload;
     }
 
@@ -49,8 +49,8 @@ const createProducts = async () => {
   try {
     let payload = await ProductsRepository.find({ page: 1, limit: 1 });
     if (payload.docs.length === 0) {
-      console.log('Products empty');
-      console.log('Products creating..');
+      console.log(`Products empty`);
+      console.log(`Products creating..`);
 
       let temp = 0;
       for (let i = 0; i < ProductsDemo.length; i++) {
@@ -85,7 +85,7 @@ const createProducts = async () => {
         console.log(`Create Products failed`);
       }
     } else {
-      console.log('Products exists');
+      console.log(`Products exists`);
       return payload;
     }
 
@@ -101,8 +101,8 @@ const createProductColors = async () => {
   try {
     let payload = await ProductColorsRepository.find({ page: 1, limit: 1 });
     if (payload.docs.length === 0) {
-      console.log('ProductColors empty');
-      console.log('ProductColors creating..');
+      console.log(`ProductColors empty`);
+      console.log(`ProductColors creating..`);
 
       let temp = 0;
       for (let i = 0; i < ProductColorsDemo.length; i++) {
@@ -119,7 +119,7 @@ const createProductColors = async () => {
         console.log(`Create ProductColors failed`);
       }
     } else {
-      console.log('ProductColors exists');
+      console.log(`ProductColors exists`);
       return payload;
     }
 
@@ -135,8 +135,8 @@ const createProductSizes = async () => {
   try {
     let payload = await ProductSizesRepository.find({ page: 1, limit: 1 });
     if (payload.docs.length === 0) {
-      console.log('ProductSizes empty');
-      console.log('ProductSizes creating..');
+      console.log(`ProductSizes empty`);
+      console.log(`ProductSizes creating..`);
 
       let temp = 0;
       for (let i = 0; i < ProductSizesDemo.length; i++) {
@@ -153,7 +153,7 @@ const createProductSizes = async () => {
         console.log(`Create ProductSizes failed`);
       }
     } else {
-      console.log('ProductSizes exists');
+      console.log(`ProductSizes exists`);
       return payload;
     }
 
