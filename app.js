@@ -53,8 +53,8 @@ app.use('/api/product-variants', productVariantRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  // next(createError(404));
-  res.status(404).redirect('/');
+  next(createError(404));
+  // res.status(404).redirect('/');
 });
 
 // error handler

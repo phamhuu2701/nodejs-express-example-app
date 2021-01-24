@@ -1,5 +1,5 @@
 const ResponseHandler = require('../utils/responseHandler');
-const { validateEmail, formValidate } = require('../utils/formValidate');
+const { formValidate } = require('../utils/formValidate');
 const ErrorCode = require('../utils/errorCode');
 
 const login = async (req, res, next) => {
