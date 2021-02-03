@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Controller = require('../controllers/productColor');
+const Controller = require('../controllers/vendor');
 const UserValidator = require('../validator/user');
 
 router.get('/', Controller.find);

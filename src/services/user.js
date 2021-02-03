@@ -41,7 +41,15 @@ const findById = async (req) => {
 const update = async (req) => {
   try {
     const { authorization } = req.headers;
-    const { firstName, lastName, gender, address, birthday, avatar, cover } = req.body;
+    const { 
+      firstName, 
+      lastName, 
+      gender, 
+      address, 
+      birthday, 
+      avatar, 
+      cover 
+    } = req.body;
 
     const fields = {
       firstName,
@@ -55,8 +63,9 @@ const update = async (req) => {
 
     let user = await Repository.getUserByToken(authorization);
     if (user) {
+
       // destroy avatar
-      if (fields.avatar && user.avatar && user.avatar != fields.avatar) {
+      if (fields.avatar && user.avatar && user.avatar !== fields.avatar) {
         await CloudinaryUploader.destroy(user.avatar);
       }
 
@@ -68,7 +77,7 @@ const update = async (req) => {
       let data = {};
       Object.keys(fields).forEach((key) => (fields[key] ? (data[key] = fields[key]) : null));
 
-      if (JSON.stringify(data) != '{}') {
+      if (JSON.stringify(data) !== '{}') {
         return await Repository.update({ _id: user._id, data });
       } else {
         throw { message: ErrorCode.NOTHING_TO_UPDATE, code: ErrorCode.NOTHING_TO_UPDATE };

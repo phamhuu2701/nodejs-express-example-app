@@ -1,4 +1,4 @@
-const Repository = require('../repositories/productVariant');
+const Repository = require('../repositories/vendor');
 const UserRepository = require('../repositories/user');
 const ErrorCode = require('../utils/errorCode');
 
@@ -48,11 +48,11 @@ const findById = async (req) => {
 const update = async (req) => {
   try {
     const { authorization } = req.headers;
-    const { _id, amount, sold, price } = req.body;
+    const { _id, name } = req.body;
 
     let user = await UserRepository.getUserByToken(authorization);
     if (user && user.role === 'ADMIN') {
-      const fields = { amount, sold, price };
+      const fields = { name };
 
       let data = {};
       Object.keys(fields).forEach((key) => (fields[key] ? (data[key] = fields[key]) : null));

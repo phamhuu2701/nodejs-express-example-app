@@ -15,12 +15,6 @@ module.exports.ProductColorsDemo = [
     name: 'Green',
   },
   {
-    name: 'Turquoise',
-  },
-  {
-    name: 'Indigo',
-  },
-  {
     name: 'Pink',
   },
   {
@@ -31,9 +25,6 @@ module.exports.ProductColorsDemo = [
   },
   {
     name: 'Teal',
-  },
-  {
-    name: 'Mauv',
   },
   {
     name: 'Maroon',

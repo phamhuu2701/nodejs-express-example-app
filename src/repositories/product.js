@@ -1,5 +1,6 @@
 const Model = require('../models/products');
 const ErrorCode = require('../utils/errorCode');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const create = async (model) => {
   try {
@@ -23,14 +24,15 @@ const find = async ({ page, limit, keyword, vendor }) => {
         ],
       };
     }
-    if (vendor) {
-      query = { ...query, vendor: new RegExp(vendor.toLowerCase(), 'i') };
+    if (ObjectId.isValid(vendor)) {
+      query = { ...query, vendor };
     }
 
     return await Model.paginate(query, {
       page,
       limit,
       sort: { createdAt: -1 },
+      populate: ['vendor'],
     });
   } catch (error) {
     console.log(error);
@@ -40,7 +42,8 @@ const find = async ({ page, limit, keyword, vendor }) => {
 
 const findById = async (_id) => {
   try {
-    const res = await Model.findById(_id);
+    const res = await Model.findById(_id)
+      .populate('vendor');
     if (res) {
       return res;
     } else {
@@ -54,7 +57,8 @@ const findById = async (_id) => {
 
 const update = async ({ _id, data }) => {
   try {
-    return await Model.findOneAndUpdate({ _id }, data, { new: true });
+    return await Model.findOneAndUpdate({ _id }, data, { new: true })
+      .populate('vendor');;
   } catch (error) {
     console.log(error);
     throw error;

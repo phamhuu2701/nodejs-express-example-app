@@ -1,16 +1,24 @@
 const Repository = require('../repositories/product');
+const UserRepository = require('../repositories/user');
 const convertPublicId = require('../utils/convertPublicId');
 const ErrorCode = require('../utils/errorCode');
 const removeVietnameseTones = require('../utils/removeVietnameseTones');
 
 const create = async (req) => {
   try {
+    const { authorization } = req.headers;
     const data = req.body;
 
-    let _data = { ...data };
-    _data.publishId = convertPublicId(removeVietnameseTones(data.title));
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user && user.role === 'ADMIN') {
 
-    return await Repository.create(_data);
+      let _data = { ...data };
+      _data.publishId = convertPublicId(removeVietnameseTones(data.title));
+  
+      return await Repository.create(_data);
+    } else {
+      throw { message: ErrorCode.UNAUTHORIZATION, code: ErrorCode.UNAUTHORIZATION };
+    }
   } catch (error) {
     console.log(error);
     throw error;
@@ -44,6 +52,7 @@ const findById = async (req) => {
 
 const update = async (req) => {
   try {
+    const { authorization } = req.headers;
     const {
       _id,
       title,
@@ -61,7 +70,8 @@ const update = async (req) => {
       tags,
     } = req.body;
 
-    if (_id) {
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user && user.role === 'ADMIN') {
       const fields = {
         title,
         description,
@@ -87,7 +97,7 @@ const update = async (req) => {
         throw { message: ErrorCode.NOTHING_TO_UPDATE, code: ErrorCode.NOTHING_TO_UPDATE };
       }
     } else {
-      throw { message: ErrorCode.NOT_FOUND, code: ErrorCode.NOT_FOUND };
+      throw { message: ErrorCode.UNAUTHORIZATION, code: ErrorCode.UNAUTHORIZATION };
     }
   } catch (error) {
     console.log(error);
@@ -97,9 +107,16 @@ const update = async (req) => {
 
 const _delete = async (req) => {
   try {
+    const { authorization } = req.headers;
     const { _id } = req.body;
 
-    return await Repository.delete(_id);
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user && user.role === 'ADMIN') {
+
+      return await Repository.delete(_id);
+    } else {
+      throw { message: ErrorCode.UNAUTHORIZATION, code: ErrorCode.UNAUTHORIZATION };
+    }
   } catch (error) {
     console.log(error);
     throw error;

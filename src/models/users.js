@@ -25,8 +25,7 @@ const schema = {
     default: 'https://source.unsplash.com/random/1200x900',
     maxlength: 300,
   },
-  role: { type: Number, required: true, enum: [0, 1, 2], default: 0 },
-  loginCount: { type: Number, required: true, min: 0, default: 0 },
+  role: { type: String, required: true, enum: ['GUEST', 'MEMBERSHIP', 'ADMIN'], default: 'GUEST' },
 };
 
 const newSchema = new Schema(schema, {

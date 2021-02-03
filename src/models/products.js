@@ -3,7 +3,7 @@ const connection = require('../connector/mongo/connection');
 const Schema = mongoose.Schema;
 
 const schema = {
-  title: { type: String, required: true, trim: true, maxlength: 200 },
+  title: { type: String, required: true, trim: true, maxlength: 250 },
   description: { type: String, required: true, trim: true, maxlength: 2500 },
   publishId: { type: String, required: true, trim: true, maxlength: 100 },
   images: [{ type: String }],
@@ -15,7 +15,7 @@ const schema = {
   metaDescription: { type: String, required: true, trim: true, maxlength: 300 },
   metaUrl: { type: String, required: true, trim: true, maxlength: 200 },
   status: { type: String, required: true, enum: ['Draft', 'Published'], default: 'Draft' },
-  vendor: { type: String, trim: true, maxlength: 100 },
+  vendor: { type: Schema.ObjectId, ref: 'Vendors' },
   tags: [{ type: String }],
 };
 
@@ -35,24 +35,24 @@ const newSchema = new Schema(schema, {
   },
 });
 
-newSchema.path('images').validate(function (value) {
-  if (value.length === 0) {
+newSchema.path('images').validate(function (items) {
+  if (items.length === 0) {
     throw new Error('Images can not be blank');
   }
-  if (value.length > 5) {
-    throw new Error('Images size can not be greater than 5');
+  if (items.length > 5) {
+    throw new Error('Images length can not be greater than 5');
   }
 });
 
-newSchema.path('videos').validate(function (value) {
-  if (value.length > 2) {
-    throw new Error('Videos size can not be greater than 2');
+newSchema.path('videos').validate(function (items) {
+  if (items.length > 2) {
+    throw new Error('Videos length can not be greater than 2');
   }
 });
 
-newSchema.path('tags').validate(function (value) {
-  if (value.length > 5) {
-    throw new Error('Tags size can not be greater than 5');
+newSchema.path('tags').validate(function (items) {
+  if (items.length > 5) {
+    throw new Error('Tags length can not be greater than 5');
   }
 });
 

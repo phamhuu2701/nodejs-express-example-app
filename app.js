@@ -19,6 +19,7 @@ const productMaterialRouter = require('./src/routes/productMaterial');
 const productSizeRouter = require('./src/routes/productSize');
 const productStyleRouter = require('./src/routes/productStyle');
 const productVariantRouter = require('./src/routes/productVariant');
+const vendorRouter = require('./src/routes/vendor');
 
 // connect mongodb
 const CONFIG = require('./src/config');
@@ -50,6 +51,7 @@ app.use('/api/product-materials', productMaterialRouter);
 app.use('/api/product-sizes', productSizeRouter);
 app.use('/api/product-styles', productStyleRouter);
 app.use('/api/product-variants', productVariantRouter);
+app.use('/api/vendors', vendorRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

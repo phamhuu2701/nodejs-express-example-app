@@ -32,6 +32,7 @@ const upload = (path, resource_type = 'image') => {
               : 'FILE_') + Date.now(),
         })
         .then((res) => {
+          
           // remove file from server after uploaded
           fs.unlinkSync(path);
 

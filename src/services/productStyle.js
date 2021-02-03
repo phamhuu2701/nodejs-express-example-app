@@ -1,11 +1,19 @@
 const Repository = require('../repositories/productStyle');
+const UserRepository = require('../repositories/user');
 const ErrorCode = require('../utils/errorCode');
 
 const create = async (req) => {
   try {
+    const { authorization } = req.headers;
     const data = req.body;
 
-    return await Repository.create(data);
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user && user.role === 'ADMIN') {
+
+      return await Repository.create(data);
+    } else {
+      throw { message: ErrorCode.UNAUTHORIZATION, code: ErrorCode.UNAUTHORIZATION };
+    }
   } catch (error) {
     console.log(error);
     throw error;
@@ -39,8 +47,11 @@ const findById = async (req) => {
 
 const update = async (req) => {
   try {
+    const { authorization } = req.headers;
     const { _id, name } = req.body;
-    if (_id) {
+
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user && user.role === 'ADMIN') {
       const fields = { name };
 
       let data = {};
@@ -52,7 +63,7 @@ const update = async (req) => {
         throw { message: ErrorCode.NOTHING_TO_UPDATE };
       }
     } else {
-      throw { message: ErrorCode.NOT_FOUND, code: ErrorCode.NOT_FOUND };
+      throw { message: ErrorCode.UNAUTHORIZATION, code: ErrorCode.UNAUTHORIZATION };
     }
   } catch (error) {
     console.log(error);
@@ -62,9 +73,16 @@ const update = async (req) => {
 
 const _delete = async (req) => {
   try {
+    const { authorization } = req.headers;
     const { _id } = req.body;
 
-    return await Repository.delete(_id);
+    let user = await UserRepository.getUserByToken(authorization);
+    if (user && user.role === 'ADMIN') {
+
+      return await Repository.delete(_id);
+    } else {
+      throw { message: ErrorCode.UNAUTHORIZATION, code: ErrorCode.UNAUTHORIZATION };
+    }
   } catch (error) {
     console.log(error);
     throw error;

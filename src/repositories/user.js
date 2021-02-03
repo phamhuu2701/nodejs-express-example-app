@@ -176,13 +176,6 @@ const login = async ({ username, password }) => {
           code: ErrorCode.USERNAME_OR_PASSWORD_INCORRECT,
         };
       } else {
-        // update login count
-        user = await Model.findOneAndUpdate(
-          { _id: user._id },
-          { loginCount: user.loginCount + 1 },
-          { new: true },
-        );
-
         const token = await generateToken({ _id: user._id, email: user.email });
         return { user, token };
       }
@@ -216,6 +209,7 @@ const loginFacebook = async (data) => {
 
     let user = await Model.findOne({ email });
     if (!user) {
+
       // register user
       let item = {
         firstName: name.slice(0, name.indexOf(' ')).trim(),
@@ -226,6 +220,7 @@ const loginFacebook = async (data) => {
       };
       user = await create(item);
     } else {
+
       // update user
       if (JSON.stringify(data) !== JSON.stringify(user.facebookLogin)) {
         let _data = {
@@ -254,6 +249,7 @@ const loginGoogle = async (data) => {
 
     let user = await Model.findOne({ email });
     if (!user) {
+
       // register user
       let item = {
         firstName: givenName,
@@ -264,6 +260,7 @@ const loginGoogle = async (data) => {
       };
       user = await create(item);
     } else {
+
       // update user
       if (JSON.stringify(data) !== JSON.stringify(user.googleLogin)) {
         let _data = {
